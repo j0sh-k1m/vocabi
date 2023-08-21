@@ -1,18 +1,18 @@
-from application import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Table, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 # Association Tables 
 
-User_Group = Table('user_group', Base.metadata, 
-                   Column('user_id', Integer, ForeignKey('user.user_id')), 
-                   Column('group_id', Integer, ForeignKey('group.group_id'))
-                   )
+# User_Group = Table('user_group', Base.metadata, 
+#                    Column('user_id', Integer, ForeignKey('user.user_id')), 
+#                    Column('group_id', Integer, ForeignKey('group.group_id'))
+#                    )
 
 # End of Association Tables 
-
 
 class User(Base):
     __tablename__ = 'user'
@@ -24,7 +24,7 @@ class User(Base):
     password = Column(String, nullable=False)
     created_at = Column(String, nullable=False)
     
-    groups = relationship('Group', seconday=User_Group, backref='members', lazy=True)
+    # groups = relationship('Group', secondary=User_Group, backref='members', lazy=True)
     words = relationship('UserWord', backref='user', lazy=True)
     stats = relationship('UserStat', backref='user', lazy=True)
 
@@ -63,7 +63,8 @@ class UserWord(Base):
     correct = Column(String, nullable=False)
     incorrect = Column(String, nullable=False)
 
-    def __init__(self, word: str, word_type: str, description: str, definition: str) -> None:
+    def __init__(self, user_id: int, word: str, word_type: str, description: str, definition: str) -> None:
+        self.user_id = user_id 
         self.word = word
         self.word_type = word_type 
         self.description = description 
@@ -94,11 +95,12 @@ class UserStat(Base):
     correct = Column(Integer, nullable=False)
     incorrect = Column(Integer, nullable=False)
 
+    def __init__(self, user_id: int):
+        self.user_id = user_id 
+        self.challenge_wins = 0
+        self.total_words_added = 0 
+        self.total_words_practiced = 0 
+        self.correct = 0 
+        self.incorrect = 0 
 
-
-class Group(Base):
-    pass 
-
-class Category(Base):
-    pass 
-
+# TODO: Create Group and Category tables 
