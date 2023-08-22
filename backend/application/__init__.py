@@ -9,7 +9,6 @@ db = SQLAlchemy()
 Session = sessionmaker()
 socketio = SocketIO() 
 
-# TODO: Create app using Config
 def create_application(dev_mode: str):
     app = Flask(__name__, instance_relative_config=False)
 

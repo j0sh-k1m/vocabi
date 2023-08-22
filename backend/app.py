@@ -6,4 +6,4 @@ application = create_application("DEV")
 CORS(application)
 
 if __name__ == '__main__':
-    socketio.run(application, debug=True)
+    socketio.run(application, port=5000, debug=True)
