@@ -35,6 +35,25 @@ class User(Base):
         self.password = password 
         self.created_at = datetime.utcnow() 
 
+class UnverifiedUser(Base):
+    __tablename__ = 'unverified_user'
+
+    user_id = Column(Integer, primary_key=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    token = Column(String, nullable=False)
+    created_at = Column(String, nullable=False)
+
+    def __init__(self, first_name: str, last_name: str, email: str, password: str, token: str = ""):
+        self.email = email 
+        self.first_name = first_name
+        self.last_name = last_name
+        self.password = password
+        self.token = token
+        self.created_at = datetime.utcnow()
+
 class Word(Base): 
     __tablename__ = 'word'
     word_id = Column(Integer, primary_key=True)

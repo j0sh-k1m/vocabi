@@ -24,6 +24,13 @@ def create_application(dev_mode: str):
     with app.app_context(): 
 
         from application.models.models import Base
+        from application.api.auth_routes import auth_bp
+
+        # app.register_blueprint(users_bp) 
+        app.register_blueprint(auth_bp)
+
+        # for rule in app.url_map.iter_rules():
+        #     print(rule.endpoint, rule.methods, rule.rule)
 
         Base.metadata.create_all(engine, checkfirst=True)
         
