@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_socketio import SocketIO
+from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
 Session = sessionmaker()
@@ -14,8 +15,10 @@ def create_application(dev_mode: str):
 
     if dev_mode == 'DEV':
         app.config.from_object("config.DevConfig")
+        app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False 
     elif dev_mode == 'PROD':
         app.config.from_object("config.ProdConfig")
+        app.config['JWT_ACCESS_TOKEN_EXPIRES'] = True 
     
     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     Session.configure(bind=engine)
