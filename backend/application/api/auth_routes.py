@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify
 from application import Session
 from application.models.models import User
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, UrlParamDoesNotExistException
+from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException
 from application.utils.utils import hash_password
 from application.utils.utils import is_valid_email, is_valid_password
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+"""User sign up"""
 @auth_bp.route('/signup', methods=['POST'])
 def signup():
     from application.api import unverified_user_service
@@ -56,6 +57,7 @@ def signup():
     finally:
         session.close() 
 
+"""Verify a user's account by email address"""
 @auth_bp.route('/verify-email/<token>', methods=['GET'])
 def verify_email(token):
     from application.api import unverified_user_service, user_service

@@ -4,7 +4,7 @@ from application.data.user_dao import UserDAO
 from application import Session 
 from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException
 from itsdangerous import URLSafeTimedSerializer
-from app import get_secret
+from flask import current_app
 from typing import Optional
 
 class UnverifiedUserService:
@@ -39,7 +39,7 @@ class UnverifiedUserService:
 
             #create token 
             user_id = self.unverified_user_dao.get_user_by_email(session, email).user_id
-            serializer = URLSafeTimedSerializer(get_secret())
+            serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
             token = serializer.dumps(user_id, salt='email-verification')
 
             # set token on user 
