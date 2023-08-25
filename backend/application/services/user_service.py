@@ -73,15 +73,8 @@ class UserService:
             if user is None:
                 raise UserDoesNotExistException
 
-            print("Valid Email")
-
-            # user.password is a string -> causing error 
-            print(type(user.password))
-
-            if not bcrypt.checkpw(password.encode(), user.password):
+            if bcrypt.checkpw(password.encode(), user.password) is False:
                 raise InvalidLoginCredentialsException
-            
-            print("Valid Password")
 
             return user 
 

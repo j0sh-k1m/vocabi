@@ -67,19 +67,13 @@ def verify_email(token):
     from application.api import unverified_user_service, user_service
 
     try: 
-        # url param <token>
-        # token = request.args.get('token')
-        print("Verifying email...")
-
         session = Session()
 
         # verify the user
         user = unverified_user_service.verify_user_token(session, token)
-        print("Verified user:", user)
 
         # create user in user table 
         user_service.create_user(session, user.first_name, user.last_name, user.email, user.password)
-        print("User created in user table")
 
         # delete user from unverified_user table 
         unverified_user_service.delete_user(session, user.user_id)
@@ -113,22 +107,21 @@ def login():
     from application.api import user_service
 
     try:
-        print("Logging in...")
         data = request.json 
 
+        # check user input validity 
         if not is_valid_email(data['email']):
             raise InvalidEmailException
 
         if not is_valid_password(data['password']):
             raise InvalidPasswordException
-        
-        print("Valid email & password input...")
-        print("Checking login credentials...")
 
         session = Session()
 
+        # attempt to login the user 
         user = user_service.user_login(session, data['email'], data['password'])
 
+        # create access token NOTE: may want to change identity to email 
         access_token = create_access_token(identity=user.user_id)
 
         return jsonify({ "token": access_token }), 200
@@ -144,3 +137,10 @@ def login():
     
     except InvalidPasswordException as e:
         return jsonify({ "error": str(e) }), 400 
+
+    except Exception as e: 
+        session.rollback()
+        return jsonify({ "error": f"Server of Database error: {e}" }), 500 
+    
+    finally:
+        session.close()
