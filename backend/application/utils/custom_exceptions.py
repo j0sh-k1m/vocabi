@@ -33,3 +33,8 @@ class UrlParamDoesNotExistException(Exception):
             self.message(f"Url Param {param_name} is missing")
         else:
             self.message("Url Param is missing")
+
+class InvalidLoginCredentialsException(Exception):
+    def __init__(self):
+        self.message = "Invald Login Credentials"
+        super().__init__(self.message)

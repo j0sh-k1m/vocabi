@@ -4,7 +4,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_socketio import SocketIO
-from flask_jwt_extended import JWTManager
 
 db = SQLAlchemy()
 Session = sessionmaker()

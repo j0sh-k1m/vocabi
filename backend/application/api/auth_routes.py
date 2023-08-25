@@ -1,9 +1,10 @@
 from flask import Blueprint, request, jsonify
 from application import Session
 from application.models.models import User
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException
+from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, InvalidLoginCredentialsException
 from application.utils.utils import hash_password
 from application.utils.utils import is_valid_email, is_valid_password
+from flask_jwt_extended import jwt_required, create_access_token
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -26,7 +27,10 @@ def signup():
 
         print("Valid email & password")
 
+        # Hash password 
         hashed_password = hash_password(data['password'])
+
+        # Create new unverifified_user 
         unverified_user_service.create_user(
                     session, data['first_name'], data['last_name'], data['email'], hashed_password)  
           
@@ -41,18 +45,18 @@ def signup():
         return jsonify({ "message": f"Successfully created user: {data['email']} " }), 200
     
     except UserAlreadyExistsException as e:
-        return jsonify({ "message": str(e) }), 400
+        return jsonify({ "error": str(e) }), 400
     
     except InvalidEmailException as e:
-        return jsonify({ "message": str(e) }), 400
+        return jsonify({ "error": str(e) }), 400
     
     except InvalidPasswordException as e:
-        return jsonify({ "message": str(e) }), 400
+        return jsonify({ "error": str(e) }), 400
     
     except Exception as e: 
         # Handle exceptions 
         session.rollback() # Rollback (remove) changes 
-        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
+        return jsonify({ "error": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close() 
@@ -86,26 +90,57 @@ def verify_email(token):
 
     # handle errors 
     except UserDoesNotExistException as e:
-        return jsonify({ "message": str(e) }), 400
+        return jsonify({ "error": str(e) }), 400
     
     except UserAlreadyExistsException as e:
-        return jsonify({ "message": str(e) }), 400 
+        return jsonify({ "error": str(e) }), 400 
     
     except InvalidEmailException as e:
-        return jsonify({ "message": str(e) }), 400 
+        return jsonify({ "error": str(e) }), 400 
     
     except InvalidPasswordException as e: 
-        return jsonify({ "message": str(e) }), 400 
+        return jsonify({ "error": str(e) }), 400 
     
     except Exception as e:
         session.rollback()
-        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
+        return jsonify({ "error": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close()
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    return jsonify({ "message": "Not Implemented" })
+    from application.api import user_service
 
+    try:
+        print("Logging in...")
+        data = request.json 
+
+        if not is_valid_email(data['email']):
+            raise InvalidEmailException
+
+        if not is_valid_password(data['password']):
+            raise InvalidPasswordException
+        
+        print("Valid email & password input...")
+        print("Checking login credentials...")
+
+        session = Session()
+
+        user = user_service.user_login(session, data['email'], data['password'])
+
+        access_token = create_access_token(identity=user.user_id)
+
+        return jsonify({ "token": access_token }), 200
+
+    except UserDoesNotExistException as e:
+        return jsonify({ "error": str(e) }), 400
+
+    except InvalidLoginCredentialsException as e:
+        return jsonify({ "error": str(e) }), 400
     
+    except InvalidEmailException as e:
+        return jsonify({ "error": str(e) }), 400 
+    
+    except InvalidPasswordException as e:
+        return jsonify({ "error": str(e) }), 400 

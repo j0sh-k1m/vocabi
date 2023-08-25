@@ -33,6 +33,6 @@ def is_valid_email(email: str) -> bool:
     email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return re.match(email_regex, email) is not None
 
-def hash_password(password: str) -> str:
+def hash_password(password: str) -> bytes:
     # hash password 
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())

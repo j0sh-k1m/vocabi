@@ -1,19 +1,20 @@
 from application.models.models import User 
 from application import Session 
 from application.data.user_dao import UserDAO
-import bcrypt 
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException
+from application.utils.custom_exceptions import UserAlreadyExistsException, UserDoesNotExistException, InvalidLoginCredentialsException
 from application.utils.utils import is_valid_email, is_valid_password
+from typing import Optional
+import bcrypt
 
 class UserService: 
     def __init__(self, user_dao: UserDAO):
         self.user_dao = user_dao 
 
-    def create_user(self, session: Session, first_name: str, last_name: str, email: str, password: str) -> None:
+    def create_user(self, session: Session, first_name: str, last_name: str, email: str, password: bytes) -> None:
         """Creates a user in the user table with provided credentials/info
         
         Args:
-            session: sqlalchemy.orm session
+            session: session
             first_name: users first name
             last_name: users last name
             email: users email
@@ -36,3 +37,56 @@ class UserService:
         # propogate exceptions to API
         except UserAlreadyExistsException:
             raise
+    
+    def get_user_info_by_id(self, session, user_id: int) -> Optional[User]:
+        """Gets user by id 
+        
+        Args: 
+            session: session
+            user_id: user's id
+        """
+        return self.user_dao.get_user_by_id(session, user_id)
+    
+    def get_user_info_by_email(self, session, email: str) -> Optional[User]:
+        """Gets user by email 
+        
+        Args:
+            session: sqlalchemy.orm session
+            email: user's email 
+        """
+        return self.user_dao.get_user_by_email(session, email)
+    
+    def user_login(self, session, email: str, password: bytes) -> Optional[User]:
+        """Attempts to login user
+        
+        Args: 
+            session: session
+            email: user's email
+            password: user's password
+        
+        Raises: 
+            UserDoesNotExistException: user does not exist in database 
+            InvalidLoginCredentialsException: user has not provided proper credentials 
+        """
+        try:
+            user = self.user_dao.get_user_by_email(session, email)
+            if user is None:
+                raise UserDoesNotExistException
+
+            print("Valid Email")
+
+            # user.password is a string -> causing error 
+            print(type(user.password))
+
+            if not bcrypt.checkpw(password.encode(), user.password):
+                raise InvalidLoginCredentialsException
+            
+            print("Valid Password")
+
+            return user 
+
+        except UserDoesNotExistException: 
+            raise UserDoesNotExistException
+        
+        except InvalidLoginCredentialsException:
+            raise InvalidLoginCredentialsException

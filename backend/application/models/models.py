@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Boolean, Table, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, LargeBinary
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.ext.declarative import declarative_base
@@ -21,14 +21,14 @@ class User(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
+    password = Column(LargeBinary, nullable=False)
     created_at = Column(String, nullable=False)
     
     # groups = relationship('Group', secondary=User_Group, backref='members', lazy=True)
     words = relationship('UserWord', backref='user', lazy=True)
     stats = relationship('UserStat', backref='user', lazy=True)
 
-    def __init__(self, first_name: str, last_name: str, email: str, password: str) -> None:
+    def __init__(self, first_name: str, last_name: str, email: str, password: bytes) -> None:
         self.first_name = first_name 
         self.last_name = last_name 
         self.email = email 
@@ -42,11 +42,11 @@ class UnverifiedUser(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    password = Column(String, nullable=False)
+    password = Column(LargeBinary, nullable=False)
     token = Column(String, nullable=False)
     created_at = Column(String, nullable=False)
 
-    def __init__(self, first_name: str, last_name: str, email: str, password: str, token: str = ""):
+    def __init__(self, first_name: str, last_name: str, email: str, password: bytes, token: str = ""):
         self.email = email 
         self.first_name = first_name
         self.last_name = last_name

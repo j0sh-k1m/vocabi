@@ -12,11 +12,11 @@ class UnverifiedUserService:
         self.unverified_user_dao = unverified_user_dao
         self.user_dao = user_dao
 
-    def create_user(self, session: Session, first_name: str, last_name: str, email: str, password: str) -> None:
+    def create_user(self, session: Session, first_name: str, last_name: str, email: str, password: bytes) -> None:
         """Creates an unverified user with provided credentials, upon signup/register
         
         Args:
-            session: sqlalchemy.orm session
+            session: session
             first_name: user's first name
             last_name: user's last name
             email: user's email 
@@ -29,6 +29,9 @@ class UnverifiedUserService:
         """
         try: 
             if self.unverified_user_dao.get_user_by_email(session, email) is not None:
+                raise UserAlreadyExistsException(email)
+            
+            if self.user_dao.get_user_by_email(session, email) is not None:
                 raise UserAlreadyExistsException(email)
 
             # create new unverified user 
@@ -52,7 +55,7 @@ class UnverifiedUserService:
         """Verifies the user by checking token value, and creates user in user table, and deletes user from unverified table
         
         Args: 
-            session: sqlalchemy.orm session
+            session: session
             url_token: token from url params 
         
         Raises: 
@@ -72,7 +75,7 @@ class UnverifiedUserService:
         """Deletes a user from db
         
         Args: 
-            session: sqlalchemy.orm session
+            session: session
             user_id: id of user to be deleted
         """
         self.unverified_user_dao.delete_user(session, user_id)
