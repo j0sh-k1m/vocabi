@@ -59,14 +59,12 @@ class Word(Base):
     word_id = Column(Integer, primary_key=True)
     word = Column(String, nullable=False)
     word_type = Column(String, nullable=False)
-    description = Column(String(length=50), nullable=False)
     definition = Column(String(length=300), nullable=False)
     created_at = Column(String, nullable=False)
     
-    def __init__(self, word: str, word_type: str, description: str, definition: str) -> None: 
+    def __init__(self, word: str, word_type: str, definition: str) -> None: 
         self.word = word
         self.word_type = word_type 
-        self.description = description 
         self.definition = definition 
         self.created_at = datetime.utcnow() 
 
@@ -76,31 +74,26 @@ class UserWord(Base):
     user_id = Column(Integer, ForeignKey('user.user_id'))
     word = Column(String, nullable=False)
     word_type = Column(String, nullable=False)
-    description = Column(String(length=50), nullable=False)
+    category = Column(String, nullable=False)
     definition = Column(String(length=300), nullable=False)
+    translated_language = Column(String, nullable=False)
+    translation = Column(String, nullable=False)
     created_at = Column(String, nullable=False)
     correct = Column(String, nullable=False)
     incorrect = Column(String, nullable=False)
 
-    def __init__(self, user_id: int, word: str, word_type: str, description: str, definition: str) -> None:
+    def __init__(self, user_id: int, word: str, word_type: str, category: str, definition: str, translated_language: str, translation: str) -> None:
         self.user_id = user_id 
         self.word = word
         self.word_type = word_type 
-        self.description = description 
+        self.category = category
         self.definition = definition  
+        self.translated_language = translated_language
+        self.translation = translation
         self.created_at = datetime.utcnow()
         self.correct = 0 
         self.incorrect = 0 
 
-    def set_correct_incorrect(self, correct: int, incorrect: int) -> None: 
-        self.correct = correct 
-        self.incorrect = incorrect 
-
-    def increment_correct(self) -> None:
-        self.correct += 1 
-
-    def increment_incorrect(self) -> None:
-        self.incorrect += 1        
 
 class UserStat(Base): 
     __tablename__ = 'user_stat'

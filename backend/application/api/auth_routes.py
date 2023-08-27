@@ -1,23 +1,24 @@
 from flask import Blueprint, request, jsonify
 from application import Session
-from application.models.models import User
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, InvalidLoginCredentialsException
+from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, InvalidLoginCredentialsException, MissingInformationException
 from application.utils.utils import hash_password
 from application.utils.utils import is_valid_email, is_valid_password
-from flask_jwt_extended import jwt_required, create_access_token
+from flask_jwt_extended import create_access_token
+from application.api import unverified_user_service, user_service
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 """User sign up"""
-@auth_bp.route('/signup', methods=['POST'])
+@auth_bp.route('/register', methods=['POST'])
 def signup():
-    from application.api import unverified_user_service
-
     try:
         print("Signing up...")
         data = request.json
-
+        
         session = Session()
+
+        if not data['first_name'] or not data['last_name'] or not data['email'] or not data['password']:
+            raise MissingInformationException
 
         if not is_valid_email(data['email']):
             raise InvalidEmailException(data['email'])
@@ -53,6 +54,9 @@ def signup():
     except InvalidPasswordException as e:
         return jsonify({ "error": str(e) }), 400
     
+    except MissingInformationException as e: 
+        return jsonify({ "error": str(e) }), 400
+    
     except Exception as e: 
         # Handle exceptions 
         session.rollback() # Rollback (remove) changes 
@@ -64,8 +68,6 @@ def signup():
 """Verify a user's account by email address"""
 @auth_bp.route('/verify-email/<token>', methods=['GET'])
 def verify_email(token):
-    from application.api import unverified_user_service, user_service
-
     try: 
         session = Session()
 
@@ -104,10 +106,13 @@ def verify_email(token):
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
-    from application.api import user_service
-
     try:
         data = request.json 
+
+        session = Session()
+
+        if not data['email'] or not data['password']:
+            raise MissingInformationException
 
         # check user input validity 
         if not is_valid_email(data['email']):
@@ -115,8 +120,6 @@ def login():
 
         if not is_valid_password(data['password']):
             raise InvalidPasswordException
-
-        session = Session()
 
         # attempt to login the user 
         user = user_service.user_login(session, data['email'], data['password'])

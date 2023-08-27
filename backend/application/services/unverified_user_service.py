@@ -28,6 +28,7 @@ class UnverifiedUserService:
             InvalidPasswordException: Password does not meet the requirements  
         """
         try: 
+            # check if user exists in database 
             if self.unverified_user_dao.get_user_by_email(session, email) is not None:
                 raise UserAlreadyExistsException(email)
             

@@ -38,3 +38,16 @@ class InvalidLoginCredentialsException(Exception):
     def __init__(self):
         self.message = "Invald Login Credentials"
         super().__init__(self.message)
+
+class MissingInformationException(Exception):
+    def __init__(self, info: str):
+        if info: 
+            self.message = f"Missing information in request body: {info}"
+        else:
+            self.message = 'Missing information in request body'
+        super().__init__(self.message)
+
+class UserDoesNotHaveAnyWordsException(Exception):
+    def __init__(self):
+        self.message = "User has not created any words"
+        super().__init__(self.message)

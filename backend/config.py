@@ -1,5 +1,6 @@
 import secrets
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -7,6 +8,8 @@ class Config:
     DEBUG = True
     TEMPLATES_AUTO_RELOAD = True
     SECRET_KEY = secrets.token_hex(16)
+
+    JWT_SECRET_KEY = secrets.token_hex(16)
 
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
@@ -21,6 +24,7 @@ class Config:
 class DevConfig(Config):
     DEBUG = True 
     TEMPLATES_AUTO_RELOAD = True 
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
 
     # NOTE: "*" gives access to API from all domains (Security Risk)
     CORS_ALLOWED_ORIGINS = ["*"]
