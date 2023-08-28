@@ -1,5 +1,5 @@
 from typing import List, Dict
-from application.models.models import UserWord
+from application.models.models import UserWord, UserStat
 
 def serialize_user_words(words: List[UserWord]) -> List[Dict]: 
     user_words = []
@@ -18,3 +18,15 @@ def serialize_user_words(words: List[UserWord]) -> List[Dict]:
             "incorrect": word.incorrect 
         })
     return user_words
+
+def serialize_user_stats(stats: UserStat) -> Dict:
+    serialized_data = {
+        "stat_id": stats.stat_id, 
+        "user_id": stats.user_id, 
+        "challenge_wins": stats.challenge_wins, 
+        "total_words_added": stats.total_words_added, 
+        "total_words_practiced": stats.total_words_practiced, 
+        "correct": stats.correct, 
+        "incorrect": stats.incorrect
+    }
+    return serialized_data

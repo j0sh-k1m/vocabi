@@ -4,7 +4,7 @@ from application.utils.custom_exceptions import UserAlreadyExistsException, Inva
 from application.utils.utils import hash_password
 from application.utils.utils import is_valid_email, is_valid_password
 from flask_jwt_extended import create_access_token
-from application.api import unverified_user_service, user_service
+from application.api import unverified_user_service, user_service, user_stat_service
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -46,21 +46,21 @@ def signup():
         return jsonify({ "message": f"Successfully created user: {data['email']} " }), 200
     
     except UserAlreadyExistsException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except InvalidEmailException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except InvalidPasswordException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except MissingInformationException as e: 
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except Exception as e: 
         # Handle exceptions 
         session.rollback() # Rollback (remove) changes 
-        return jsonify({ "error": f"Server or Database error: {e}" }), 500 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close() 
@@ -80,26 +80,29 @@ def verify_email(token):
         # delete user from unverified_user table 
         unverified_user_service.delete_user(session, user.user_id)
 
+        # create stats table for user 
+        user_stat_service.create_user_stat(session, user.user_id)
+
         session.commit()
 
         return jsonify({ "message": f"Successfully verified {user.email}" }), 200 
 
     # handle errors 
     except UserDoesNotExistException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except UserAlreadyExistsException as e:
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
     
     except InvalidEmailException as e:
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
     
     except InvalidPasswordException as e: 
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
     
     except Exception as e:
         session.rollback()
-        return jsonify({ "error": f"Server or Database error: {e}" }), 500 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close()
@@ -130,20 +133,20 @@ def login():
         return jsonify({ "token": access_token }), 200
 
     except UserDoesNotExistException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
 
     except InvalidLoginCredentialsException as e:
-        return jsonify({ "error": str(e) }), 400
+        return jsonify({ "message": str(e) }), 400
     
     except InvalidEmailException as e:
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
     
     except InvalidPasswordException as e:
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
 
     except Exception as e: 
         session.rollback()
-        return jsonify({ "error": f"Server of Database error: {e}" }), 500 
+        return jsonify({ "message": f"Server of Database error: {e}" }), 500 
     
     finally:
         session.close()

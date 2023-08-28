@@ -51,3 +51,13 @@ class UserDoesNotHaveAnyWordsException(Exception):
     def __init__(self):
         self.message = "User has not created any words"
         super().__init__(self.message)
+
+class WordDoesNotExistException(Exception):
+    def __init__(self):
+        self.message = "Word does not exist"
+        super().__init__(self.message)
+
+class UserHasNoStatsException(Exception):
+    def __init__(self):
+        self.message = "User does not have stats"
+        super().__init__(self.message)

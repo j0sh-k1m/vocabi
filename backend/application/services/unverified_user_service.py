@@ -1,8 +1,8 @@
-from application.models.models import UnverifiedUser, User
+from application.models.models import UnverifiedUser
 from application.data.unverified_user_dao import UnverifiedUserDAO
 from application.data.user_dao import UserDAO
 from application import Session 
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException
+from application.utils.custom_exceptions import UserAlreadyExistsException, UserDoesNotExistException
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from typing import Optional

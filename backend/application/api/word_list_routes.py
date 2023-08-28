@@ -3,7 +3,7 @@ from application import Session
 from flask_jwt_extended import jwt_required
 from application.api import user_word_service
 from application.utils.serializers import serialize_user_words
-from application.utils.custom_exceptions import UserDoesNotHaveAnyWordsException, MissingInformationException
+from application.utils.custom_exceptions import UserDoesNotHaveAnyWordsException, MissingInformationException, WordDoesNotExistException
 
 word_list_bp = Blueprint('word_list', __name__, url_prefix='/word-list')
 
@@ -14,7 +14,7 @@ def get_user_wordlist(user_id):
     try: 
         session = Session() 
 
-        user_words = user_word_service.get_words_by_id(session, user_id)
+        user_words = user_word_service.get_words_by_user_id(session, user_id)
         if user_words is None:
             raise UserDoesNotHaveAnyWordsException
         
@@ -25,10 +25,10 @@ def get_user_wordlist(user_id):
         return jsonify({ "message": "Successful", "user_words": serialized_user_words }), 200
 
     except UserDoesNotHaveAnyWordsException as e:
-        return jsonify({ "error": {str(e)} }), 400 
+        return jsonify({ "message": {str(e)} }), 400 
     
     except Exception as e: 
-        return jsonify({ "error": f"Server or Database error: {str(e)}" }), 500 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
 
 
 # Post a new word entry for a user 
@@ -63,11 +63,11 @@ def post_user_words(user_id):
 
     except MissingInformationException as e:
         session.rollback()
-        return jsonify({ "error": str(e) }), 400   
+        return jsonify({ "message": str(e) }), 400   
     
     except Exception as e: 
         session.rollback()
-        return jsonify({ "error": f"Server or Database error: {str(e)}" }), 500 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close() 
@@ -101,13 +101,48 @@ def patch_user_word(user_id):
 
     except MissingInformationException as e: 
         session.rollback() 
-        return jsonify({ "error": str(e) }), 400 
+        return jsonify({ "message": str(e) }), 400 
     
     except Exception as e: 
         session.rollback() 
-        return jsonify({ "error": f"Server or Database error: {str(e)}" }), 500
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500
     
     finally:
         session.close() 
 
-# TODO: delete endpoint 
+# Delete a word 
+@word_list_bp.route('/<int:user_id>', methods=['DELETE'])
+@jwt_required() 
+def delete_user_word(user_id):
+    try:
+        data = request.json 
+
+        session = Session() 
+
+        if data.get('word_id') is None:
+            raise MissingInformationException
+
+        word = user_word_service.get_word_info(session, data.get('word_id'))
+        if word is None: 
+            raise WordDoesNotExistException
+        
+        user_word_service.delete_word(session, data.get('word_id'))
+
+        session.commit() 
+
+        return jsonify({ "message": f"Successfully deleted word {word.word}" }), 200
+
+    except MissingInformationException as e:
+        session.rollback()
+        return jsonify({ "message": str(e) }), 400
+    
+    except WordDoesNotExistException as e: 
+        session.rollback() 
+        return jsonify({ "message": str(e) }), 400
+    
+    except Exception as e: 
+        session.rollback() 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500 
+    
+    finally:
+        session.close() 
