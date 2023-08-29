@@ -44,4 +44,4 @@ class UserStatService:
             user_id: a user's id 
             changes: user stat changes 
         """
-        self.user_stat_dao.update_user_stat(session, changes)
+        self.user_stat_dao.update_user_stat(session, user_id, changes)

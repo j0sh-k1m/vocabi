@@ -17,7 +17,7 @@ class UserStatDAO(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def update_user_stat(self, session, changes: dict) -> None:
+    def update_user_stat(self, session, user_id: int, changes: dict) -> None:
         raise NotImplementedError
     
 class SQLAlchemyUserStatDAO(UserStatDAO):

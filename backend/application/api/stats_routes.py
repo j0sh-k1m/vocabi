@@ -34,12 +34,31 @@ def get_user_stats(user_id):
     finally:
         session.close()
 
-@stat_bp.route('/<int:user_id>', methods=['POST'])
-@jwt_required()
-def post_user_stat(user_id):
-    pass 
 
 @stat_bp.route('/<int:user_id>', methods=['PATCH'])
 @jwt_required()
 def patch_user_stats(user_id):
-    pass
+    try:
+        session = Session()  
+        data = request.json 
+
+        changes: dict = {
+            "challenge_wins": data.get('challenge_wins'), 
+            "total_words_added": data.get('total_words_added'), 
+            "total_words_practiced": data.get('total_words_practiced'), 
+            "correct": data.get('correct'), 
+            "incorrect": data.get('incorrect')
+        }
+
+        user_stat_service.update_user_stat(session, user_id, changes)
+
+        session.commit() 
+
+        return jsonify({ "message": "Successfully posted user_stats" })
+
+    except Exception as e: 
+        session.rollback()
+        return jsonify({ "message": f"Server or Database error {e}" }), 500 
+    
+    finally:
+        session.close() 
