@@ -25,10 +25,15 @@ def get_user_wordlist(user_id):
         return jsonify({ "message": "Successful", "user_words": serialized_user_words }), 200
 
     except UserDoesNotHaveAnyWordsException as e:
+        session.rollback()
         return jsonify({ "message": {str(e)} }), 400 
     
     except Exception as e: 
+        session.rollback()
         return jsonify({ "message": f"Server or Database error: {e}" }), 500 
+    
+    finally: 
+        session.close() 
 
 
 # Post a new word entry for a user 

@@ -30,12 +30,14 @@ def create_application(dev_mode: str):
         from application.api.user_routes import user_bp
         from application.api.word_list_routes import word_list_bp
         from application.api.stats_routes import stat_bp
+        from application.api.user_modules_routes import user_modules_bp
 
         # app.register_blueprint(users_bp) 
         app.register_blueprint(auth_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(word_list_bp)
         app.register_blueprint(stat_bp)
+        app.register_blueprint(user_modules_bp)
 
         # for rule in app.url_map.iter_rules():
         #     print(rule.endpoint, rule.methods, rule.rule)

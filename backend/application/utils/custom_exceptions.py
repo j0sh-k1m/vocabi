@@ -61,3 +61,19 @@ class UserHasNoStatsException(Exception):
     def __init__(self):
         self.message = "User does not have stats"
         super().__init__(self.message)
+
+class MissingQueryParamException(Exception):
+    def __init__(self, query_param: str = None):
+        if query_param: 
+            self.message = f"Missing query parameter: {query_param}"
+        else: 
+            self.message = "Missing query parameter(s)"
+        super().__init__(self.message)
+
+class InvalidInformationException(Exception):
+    def __init__(self, message: str = None):
+        if message: 
+            self.message = f"Invalid information: {message}"
+        else:
+            self.message = "Invalid information was received"
+        super().__init__(self.message)

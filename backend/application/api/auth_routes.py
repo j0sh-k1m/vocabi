@@ -89,15 +89,19 @@ def verify_email(token):
 
     # handle errors 
     except UserDoesNotExistException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
     
     except UserAlreadyExistsException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400 
     
     except InvalidEmailException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400 
     
-    except InvalidPasswordException as e: 
+    except InvalidPasswordException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400 
     
     except Exception as e:
@@ -133,15 +137,19 @@ def login():
         return jsonify({ "token": access_token }), 200
 
     except UserDoesNotExistException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
 
     except InvalidLoginCredentialsException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
     
     except InvalidEmailException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400 
     
     except InvalidPasswordException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400 
 
     except Exception as e: 

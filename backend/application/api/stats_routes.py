@@ -7,6 +7,7 @@ from application.utils.serializers import serialize_user_stats
 
 stat_bp = Blueprint('stat', __name__, url_prefix='/stat')
 
+# Gets the stats for a user s
 @stat_bp.route('/<int:user_id>', methods=['GET'])
 @jwt_required()
 def get_user_stats(user_id):
@@ -20,6 +21,8 @@ def get_user_stats(user_id):
         session.commit() 
 
         serialized_user_stats = serialize_user_stats(user_stats)
+
+        # TODO: Return some word stats (best words, worst words?)
 
         return jsonify({ "message": "successful", "user_stats": serialized_user_stats }), 200 
 
@@ -35,6 +38,7 @@ def get_user_stats(user_id):
         session.close()
 
 
+# NOTE: this endpoint wont have much use 
 @stat_bp.route('/<int:user_id>', methods=['PATCH'])
 @jwt_required()
 def patch_user_stats(user_id):
