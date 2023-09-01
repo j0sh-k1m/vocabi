@@ -15,16 +15,19 @@ class InvalidEmailException(Exception):
         super().__init__(self.message)
 
 class InvalidPasswordException(Exception):
-    def __init__(self):
-        self.message = "Password must be longer than 8 characters and contain at least one lowercase, uppercase, digit, and special character"
+    def __init__(self, message: str = None):
+        if message:
+            self.message = message 
+        else: 
+         self.message = "Password must be longer than 8 characters and contain at least one lowercase, uppercase, digit, and special character"
         super().__init__(self.message)
 
 class UserDoesNotExistException(Exception):
-    def __init__(self, table_name: str = None):
-        if not table_name:
-            self.message = "User does not exist in database"
+    def __init__(self, message: str = None):
+        if not message:
+            self.message = "User does not exist"
         else:
-            self.message = f"User does not exist in {table_name} table"
+            self.message = message
         super().__init__(self.message)
 
 class UrlParamDoesNotExistException(Exception):
@@ -36,7 +39,7 @@ class UrlParamDoesNotExistException(Exception):
 
 class InvalidLoginCredentialsException(Exception):
     def __init__(self):
-        self.message = "Invald Login Credentials"
+        self.message = "Invalid Login Credentials"
         super().__init__(self.message)
 
 class MissingInformationException(Exception):

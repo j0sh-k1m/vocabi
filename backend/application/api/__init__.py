@@ -9,10 +9,6 @@ from application.services.unverified_user_service import UnverifiedUserService
 from application.services.user_word_service import UserWordService
 from application.services.user_stat_service import UserStatService
 
-# Flask Blueprints 
-users_bp = Blueprint('users', __name__, url_prefix='/users')
-
-
 # Init DAOs 
 user_dao = SQLAlchemyUserDAO()
 unverified_user_dao = SQLAlchemyUnverifiedUserDAO()

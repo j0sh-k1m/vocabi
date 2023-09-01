@@ -5,6 +5,7 @@ from application.utils.utils import hash_password
 from application.utils.utils import is_valid_email, is_valid_password
 from flask_jwt_extended import create_access_token
 from application.api import unverified_user_service, user_service, user_stat_service
+from application.utils.serializers import serialize_user
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -17,7 +18,7 @@ def signup():
         
         session = Session()
 
-        if not data['first_name'] or not data['last_name'] or not data['email'] or not data['password']:
+        if data.get('first_name') is None or data.get('last_name') is None or data.get('email') is None or data.get('password') is None: 
             raise MissingInformationException
 
         if not is_valid_email(data['email']):
@@ -118,15 +119,15 @@ def login():
 
         session = Session()
 
-        if not data['email'] or not data['password']:
+        if data['email'] is None or data['password'] is None:
             raise MissingInformationException
 
         # check user input validity 
         if not is_valid_email(data['email']):
-            raise InvalidEmailException
+            raise InvalidLoginCredentialsException
 
         if not is_valid_password(data['password']):
-            raise InvalidPasswordException
+            raise InvalidLoginCredentialsException
 
         # attempt to login the user 
         user = user_service.user_login(session, data['email'], data['password'])
@@ -134,7 +135,11 @@ def login():
         # create access token NOTE: may want to change identity to email 
         access_token = create_access_token(identity=user.user_id)
 
-        return jsonify({ "token": access_token }), 200
+        session.commit() 
+
+        serailized_user = serialize_user(user)
+
+        return jsonify({ "token": access_token, "user": serailized_user }), 200
 
     except UserDoesNotExistException as e:
         session.rollback()
@@ -143,14 +148,6 @@ def login():
     except InvalidLoginCredentialsException as e:
         session.rollback()
         return jsonify({ "message": str(e) }), 400
-    
-    except InvalidEmailException as e:
-        session.rollback()
-        return jsonify({ "message": str(e) }), 400 
-    
-    except InvalidPasswordException as e:
-        session.rollback()
-        return jsonify({ "message": str(e) }), 400 
 
     except Exception as e: 
         session.rollback()

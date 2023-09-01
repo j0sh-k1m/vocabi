@@ -12,4 +12,4 @@ def get_secret() -> str:
     return application.config['SECRET_KEY']
 
 if __name__ == '__main__':
-    socketio.run(application, port=6000, debug=True)
+    socketio.run(application, port=8080, debug=True)
