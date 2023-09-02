@@ -1,11 +1,12 @@
 from flask import Blueprint, request, jsonify
 from application import Session
-from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, InvalidLoginCredentialsException, MissingInformationException
-from application.utils.utils import hash_password
-from application.utils.utils import is_valid_email, is_valid_password
+from application.utils.custom_exceptions import UserAlreadyExistsException, InvalidEmailException, InvalidPasswordException, UserDoesNotExistException, InvalidLoginCredentialsException, MissingInformationException, EmailSendingFailedException
+from application.utils.utils import hash_password, is_valid_email, is_valid_password, send_verification_email
 from flask_jwt_extended import create_access_token
 from application.api import unverified_user_service, user_service, user_stat_service
 from application.utils.serializers import serialize_user
+from flask_mail import Message
+from application.api import mail
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -38,24 +39,37 @@ def signup():
           
         print("User created in unverified_user table")
 
+        unverified_user = unverified_user_service.get_user_by_email(session, data['email'])
+
         # Commit changes to db 
         session.commit()
 
-        # TODO: Send verification email to user
+        try: 
+            send_verification_email(unverified_user.email, unverified_user.token, mail)
+        
+        except EmailSendingFailedException:
+            raise EmailSendingFailedException
 
         # Return a result message 
-        return jsonify({ "message": f"Successfully created user: {data['email']} " }), 200
+        return jsonify({ "message": f"Successfully created user: {data['email']}" }), 200
+    
+    except EmailSendingFailedException as e: 
+        return jsonify({ "message": str(e) }), 400 
     
     except UserAlreadyExistsException as e:
+        session.rollback() 
         return jsonify({ "message": str(e) }), 400
     
     except InvalidEmailException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
     
     except InvalidPasswordException as e:
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
     
     except MissingInformationException as e: 
+        session.rollback()
         return jsonify({ "message": str(e) }), 400
     
     except Exception as e: 
@@ -67,19 +81,31 @@ def signup():
         session.close() 
 
 """Verify a user's account by email address"""
-@auth_bp.route('/verify-email/<token>', methods=['GET'])
-def verify_email(token):
+@auth_bp.route('/email-verification', methods=['POST'])
+def verify_email():
     try: 
         session = Session()
+
+        data = request.json 
+
+        token = data.get('token')
+        if token is None: 
+            raise MissingInformationException
 
         # verify the user
         user = unverified_user_service.verify_user_token(session, token)
 
+        print("User token verified")
+
         # create user in user table 
         user_service.create_user(session, user.first_name, user.last_name, user.email, user.password)
 
+        print("Created user in user table")
+
         # delete user from unverified_user table 
         unverified_user_service.delete_user(session, user.user_id)
+
+        print("delete in unverified")
 
         # create stats table for user 
         user_stat_service.create_user_stat(session, user.user_id)
@@ -87,6 +113,10 @@ def verify_email(token):
         session.commit()
 
         return jsonify({ "message": f"Successfully verified {user.email}" }), 200 
+    
+    except MissingInformationException as e: 
+        session.rollback()
+        return jsonify({ "message": str(e) }), 400 
 
     # handle errors 
     except UserDoesNotExistException as e:

@@ -9,6 +9,11 @@ from application.services.unverified_user_service import UnverifiedUserService
 from application.services.user_word_service import UserWordService
 from application.services.user_stat_service import UserStatService
 
+from flask import current_app as app 
+from flask_mail import Mail 
+
+mail = Mail(app)
+
 # Init DAOs 
 user_dao = SQLAlchemyUserDAO()
 unverified_user_dao = SQLAlchemyUnverifiedUserDAO()

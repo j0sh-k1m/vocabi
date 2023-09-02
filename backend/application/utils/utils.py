@@ -1,5 +1,24 @@
 import re 
 import bcrypt
+from flask_mail import Message, Mail
+from flask import current_app
+
+def send_verification_email(user_email: str, token: str, mail: Mail) -> None:
+    recipient = user_email 
+    msg = Message("Vocabi - Verify your email", sender=current_app.config["MAIL_USERNAME"], recipients=[recipient])
+    msg.body = f"""
+        Hello,
+
+        Thank you for registering with Vocabi. To complete your registration and verify your email address, copy this code and paste it:
+
+        [Verification Code] ({token})
+
+        If you did not register for a Vocabi account, please ignore this email.
+
+        Best regards,
+        The Vocabi Team
+        """
+    mail.send(msg)
 
 def is_valid_password(password: str) -> bool: 
     """Checks for password validity. Length of 8, 1 upper/lowercase, special char, digit

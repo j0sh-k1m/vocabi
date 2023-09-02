@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { getDesignTokens } from "../themes/themes";
+import { getDesignTokens } from "../../themes/themes";
 import axios from "axios";
 
 const RegisterPage = () => {
@@ -118,6 +118,9 @@ const RegisterPage = () => {
       })
       .then((response) => {
         // Send the user their verification email 
+        // direct the user email verification page 
+        window.location.href = "http://localhost:5173/auth/email-verification"
+
         console.log(response);
       })
       .catch((error) => {

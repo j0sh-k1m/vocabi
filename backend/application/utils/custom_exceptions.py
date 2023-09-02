@@ -80,3 +80,8 @@ class InvalidInformationException(Exception):
         else:
             self.message = "Invalid information was received"
         super().__init__(self.message)
+
+class EmailSendingFailedException(Exception):
+    def __init__(self):
+        self.message = "Failed to send email (backend)"
+        super().__init__(self.message)

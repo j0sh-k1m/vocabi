@@ -6,12 +6,13 @@ import { getDesignTokens } from "./themes/themes";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/auth/LoginPage";
 import ModulesPage from "./pages/users/ModulesPage";
 import StatsPage from "./pages/users/StatsPage";
 import WordListPage from "./pages/users/WordListPage";
-import RegisterPage from "./pages/RegisterPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import EmailVerificationPage from "./pages/auth/EmailVerificationPage";
 
 const loggedIn = true;
 
@@ -34,6 +35,7 @@ function App() {
         <Route path="/auth/login" Component={LoginPage}/>
         <Route path="/auth/register" Component={RegisterPage} />
         <Route path="/auth/password/reset" Component={ResetPasswordPage} />
+        <Route path="/auth/email-verification" Component={EmailVerificationPage} /> 
       </Routes>
     </Router>
 

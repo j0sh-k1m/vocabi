@@ -6,6 +6,7 @@ from application.utils.custom_exceptions import UserAlreadyExistsException, User
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from typing import Optional
+from urllib.parse import quote
 
 class UnverifiedUserService:
     def __init__(self, unverified_user_dao: UnverifiedUserDAO, user_dao: UserDAO):
@@ -46,6 +47,7 @@ class UnverifiedUserService:
             serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
             token = serializer.dumps(user_id, salt='email-verification')
 
+
             # set token on user 
             self.unverified_user_dao.set_user_token(session, user_id, token)
 
@@ -80,4 +82,13 @@ class UnverifiedUserService:
             user_id: id of user to be deleted
         """
         self.unverified_user_dao.delete_user(session, user_id)
+
+    def get_user_by_email(self, session, email: str) -> Optional[UnverifiedUser]:
+        """Gets a user by email
+        
+        Args: 
+            session: session 
+            email: user email 
+        """
+        return self.unverified_user_dao.get_user_by_email(session, email)
     

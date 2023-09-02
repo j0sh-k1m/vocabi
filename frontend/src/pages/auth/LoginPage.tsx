@@ -11,7 +11,7 @@ import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "@mui/material";
-import { getDesignTokens } from "../themes/themes";
+import { getDesignTokens } from "../../themes/themes";
 
 const LoginPage = () => {
   const theme = useTheme();
