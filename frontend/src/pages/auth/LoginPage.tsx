@@ -12,10 +12,16 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "@mui/material";
 import { getDesignTokens } from "../../themes/themes";
+import { authActions } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+
+  const dispatch = useDispatch(); 
+  const navigate = useNavigate(); 
 
   const [loginError, setLoginError] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +54,12 @@ const LoginPage = () => {
       })
       .then((response) => {
         console.log("API Response:", response.data);
+        dispatch(authActions.setEmail({ email: response.data.user.email }))
+        dispatch(authActions.setUserId({ user_id: response.data.user.user_id }))
+        dispatch(authActions.setFirstName({ first_name: response.data.user.first_name }))
+        dispatch(authActions.setLastName({ last_name: response.data.user.last_name }))
+        dispatch(authActions.setToken({ token: response.data.token }))
+        navigate(`/user-modules/${response.data.user.user_id}`)
       })
       .catch((error) => {
         setLoginError(error.response.data.message);

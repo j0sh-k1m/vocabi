@@ -1,7 +1,13 @@
-import { Typography } from "@mui/material"
+import { Typography } from "@mui/material";
+import SideNav from "../../components/SideNav/SideNav";
 
 const StatsPage = () => {
-    return <><Typography>The Stats Page!</Typography></>
-}
+  return (
+    <>
+      <SideNav />
+      <Typography>The Stats Page!</Typography>
+    </>
+  );
+};
 
-export default StatsPage; 
+export default StatsPage;

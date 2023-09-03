@@ -1,9 +1,13 @@
-import { Typography } from "@mui/material"
+import { Typography } from "@mui/material";
+import SideNav from "../../components/SideNav/SideNav";
 
 const ModulesPage = () => {
-    return <>
-        <Typography>Modules Page!</Typography>
+  return (
+    <>
+      <SideNav />
+      <Typography>Modules Page!</Typography>
     </>
-}
+  );
+};
 
-export default ModulesPage
+export default ModulesPage;

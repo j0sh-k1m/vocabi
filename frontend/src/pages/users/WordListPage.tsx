@@ -1,7 +1,13 @@
 import { Typography } from "@mui/material";
+import SideNav from "../../components/SideNav/SideNav";
 
 const WordListPage = () => {
-    return <><Typography>The Word List Page!</Typography></>
-}
+  return (
+    <>
+      <SideNav />
+      <Typography>The Word List Page!</Typography>
+    </>
+  );
+};
 
-export default WordListPage; 
+export default WordListPage;
