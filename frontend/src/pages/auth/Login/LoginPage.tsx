@@ -11,8 +11,8 @@ import { ChangeEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useTheme } from "@mui/material";
-import { getDesignTokens } from "../../themes/themes";
-import { authActions } from "../../store/store";
+import { getDesignTokens } from "../../../themes/themes";
+import { authActions } from "../../../store/store";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -20,8 +20,8 @@ const LoginPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
 
-  const dispatch = useDispatch(); 
-  const navigate = useNavigate(); 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [loginError, setLoginError] = useState("");
   const [password, setPassword] = useState("");
@@ -39,7 +39,7 @@ const LoginPage = () => {
 
   const handleLoginSubmission = () => {
     if (!(email && password)) {
-      return 
+      return;
     }
 
     const data = {
@@ -47,19 +47,28 @@ const LoginPage = () => {
       password: password,
     };
 
-    // Change this to api endpoint
-    axios
-      .post("http://127.0.0.1:8080/auth/login", data, {
-        headers: { "Content-Type": "application/json" },
-      })
+    axios({
+      method: "post",
+      url: "http://127.0.0.1:8080/auth/login",
+      headers: { "Content-Type": "application/json" },
+      data: data,
+    })
       .then((response) => {
         console.log("API Response:", response.data);
-        dispatch(authActions.setEmail({ email: response.data.user.email }))
-        dispatch(authActions.setUserId({ user_id: response.data.user.user_id }))
-        dispatch(authActions.setFirstName({ first_name: response.data.user.first_name }))
-        dispatch(authActions.setLastName({ last_name: response.data.user.last_name }))
-        dispatch(authActions.setToken({ token: response.data.token }))
-        navigate(`/user-modules/${response.data.user.user_id}`)
+        dispatch(authActions.setEmail({ email: response.data.user.email }));
+        dispatch(
+          authActions.setUserId({ user_id: response.data.user.user_id })
+        );
+        dispatch(
+          authActions.setFirstName({
+            first_name: response.data.user.first_name,
+          })
+        );
+        dispatch(
+          authActions.setLastName({ last_name: response.data.user.last_name })
+        );
+        dispatch(authActions.setToken({ token: response.data.token }));
+        navigate(`/user-modules/${response.data.user.user_id}`);
       })
       .catch((error) => {
         setLoginError(error.response.data.message);
@@ -71,18 +80,17 @@ const LoginPage = () => {
       <Box
         boxShadow={2}
         p={3}
-        width={{ xs: "60%", sm: "80%", md: "100%", lg: "130%", xl: "150%" }} // Responsive width
+        width={{ width: "400px" }} // Responsive width
         bgcolor="white"
         borderRadius={4}
         sx={{
           minHeight: "40vh",
-          minWidth: "17vw",
           padding: "40px",
           display: "flex",
           flexDirection: "column",
-        }} // Taller box
+        }}
       >
-        <Typography variant="h4" gutterBottom fontWeight={"bold"}>
+        <Typography variant="h4" gutterBottom fontWeight={"bold"} sx={{ textAlign: "center" }}>
           Login
         </Typography>
         <TextField

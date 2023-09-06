@@ -5,14 +5,14 @@ import { createContext, useMemo, useState } from "react";
 import { getDesignTokens } from "./themes/themes";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/auth/LoginPage";
-import ModulesPage from "./pages/users/ModulesPage";
-import StatsPage from "./pages/users/StatsPage";
-import WordListPage from "./pages/users/WordListPage";
-import RegisterPage from "./pages/auth/RegisterPage";
-import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
-import EmailVerificationPage from "./pages/auth/EmailVerificationPage";
+import HomePage from "./pages/Home/HomePage";
+import LoginPage from "./pages/auth/Login/LoginPage";
+import ModulesPage from "./pages/user/Modules/ModulesPage";
+import StatsPage from "./pages/user/Stats/StatsPage";
+import WordListPage from "./pages/user/Words/WordsPage";
+import RegisterPage from "./pages/auth/Register/RegisterPage";
+import ResetPasswordPage from "./pages/auth/ResetPassword/ResetPasswordPage";
+import EmailVerificationPage from "./pages/auth/EmailVerification/EmailVerificationPage";
 import NotFoundPage from "./pages/error/NotFoundPage";
 import { useSelector } from "react-redux";
 import { authState } from "./store/store";
@@ -25,7 +25,6 @@ function App() {
   const isAuth = useSelector((state: authState) => state.token);
   return (
     <>
-      {/* { loggedIn ? <HomePage></HomePage> : <LoginPage></LoginPage>} */}
 
       <Router>
         {/* <HomePage></HomePage> */}

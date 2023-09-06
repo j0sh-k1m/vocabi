@@ -1,10 +1,10 @@
 import { Typography } from "@mui/material";
-import SideNav from "../../components/SideNav/SideNav";
+import Navbar from "../../../components/Navbar/Navbar";
 
 const WordListPage = () => {
   return (
     <>
-      <SideNav />
+      <Navbar />
       <Typography>The Word List Page!</Typography>
     </>
   );

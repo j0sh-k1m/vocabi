@@ -13,11 +13,12 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { ChangeEvent, useState } from "react";
-import { Link } from "react-router-dom";
-import { getDesignTokens } from "../../themes/themes";
+import { Link, useNavigate } from "react-router-dom";
+import { getDesignTokens } from "../../../themes/themes";
 import axios from "axios";
 
 const RegisterPage = () => {
+  const navigate = useNavigate(); 
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
 
@@ -117,10 +118,7 @@ const RegisterPage = () => {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
-        // Send the user their verification email 
-        // direct the user email verification page 
-        window.location.href = "http://localhost:5173/auth/email-verification"
-
+        navigate("http://localhost:5173/auth/email-verification")
         console.log(response);
       })
       .catch((error) => {

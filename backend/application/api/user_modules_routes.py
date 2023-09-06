@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from application.api import user_word_service, user_stat_service
 from application.utils.custom_exceptions import MissingQueryParamException, MissingInformationException, InvalidInformationException
 from application.utils.serializers import serialize_user_words, serialize_user_stats
+from collections import defaultdict
 
 user_modules_bp = Blueprint('user_modules', __name__, url_prefix='/user-modules')
 
@@ -19,14 +20,26 @@ def get_user_modules(user_id):
         session.commit() 
 
         if not user_words:
-            return jsonify({ "message": "No words have been added, Please add words!" }), 200 
+            return jsonify({ "message": "No modules/words have been added" }), 200 
 
-        categories = []
+        # only add all unique word categories along with their word_id 
+        temp = [] 
+        categories = [] 
+        word_occurrence = defaultdict(int)
         for word in user_words: 
-            if word.category not in categories: 
-                categories.append(word.category)
+            if word.category not in temp: 
+                temp.append(word.category)
+                categories.append({ "category": word.category, "id": word.word_id })
+            
+            word_occurrence[word.category] += 1      
+        
+        # add number of words in each category 
+        data = [] 
+        for i in range(len(categories)):
+            if categories[i]['category'] in word_occurrence:
+                data.append({ "category": categories[i]['category'], "id": categories[i]['id'], "occurrences": word_occurrence[categories[i]['category']] })
 
-        return jsonify({ "message": categories }), 200 
+        return jsonify({ "message": data }), 200 
     
     except Exception as e: 
         session.rollback() 

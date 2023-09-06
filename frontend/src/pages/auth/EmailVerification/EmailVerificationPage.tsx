@@ -1,6 +1,6 @@
 import { Button, InputAdornment, TextField, useTheme } from "@mui/material";
 import { Box, Typography } from "@mui/material";
-import { getDesignTokens } from "../../themes/themes";
+import { getDesignTokens } from "../../../themes/themes";
 import { CodeOutlined } from "@mui/icons-material";
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
@@ -29,17 +29,18 @@ const EmailVerificationPage = () => {
     const data = {
       token: code,
     };
-    axios
-      .post(`http://127.0.0.1:8080/auth/email-verification`, data, {
-        headers: { "Content-Type": "application/json" },
-      })
-      .then((response) => {
-        setMessage("Email Successfully Verified");
-        setErrorMessage("");
-      })
-      .catch((error) => {
-        setErrorMessage(error.response.data.message);
-      });
+
+    axios({
+      method: "post",
+      url: `http://127.0.0.1:8080/auth/email-verification`,
+      headers: { "Content-Type": "application/json" },
+      data: data,
+    }).then(response => {
+      setMessage("Email Successfully Verified");
+      setErrorMessage("");
+    }).catch(error => {
+      setErrorMessage(error.response.data.message);
+    });
   };
 
   return (

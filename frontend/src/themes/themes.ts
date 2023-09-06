@@ -4,6 +4,9 @@ import { blue, grey } from "@mui/material/colors";
 export const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
+    background: {
+      default: mode === "light" ? "#F5F5F5" : "#333333", // Set the background color here
+    },
     ...(mode === "light"
       ? {
           primary: blue,
@@ -13,6 +16,9 @@ export const getDesignTokens = (mode: PaletteMode) => ({
             secondary: grey[700],
           },
           niceBlue: "#007cfc",
+          secondaryBlue: "#AED8FF",
+          thirdBlue: "#1487fa",
+          offBlack: "#303030", // Text color for light mode
         }
       : {
           divider: "#fff",
@@ -20,7 +26,11 @@ export const getDesignTokens = (mode: PaletteMode) => ({
             primary: "#fff",
             secondary: grey[500],
           },
-          niceBlue: "#1487fa",
+          niceBlue: "#007cfc",
+          secondaryBlue: "#AED8FF",
+          thirdBlue: "#1487fa",
+          offBlack: "#303030", // Text color for dark mode
         }),
   },
 });
+

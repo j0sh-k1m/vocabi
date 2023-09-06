@@ -51,7 +51,7 @@ def signup():
             raise EmailSendingFailedException
 
         # Return a result message 
-        return jsonify({ "message": f"Successfully created user: {data['email']}" }), 200
+        return jsonify({ "message": f"Successfully created user: {data['email']}", "token": unverified_user.token }), 200
     
     except EmailSendingFailedException as e: 
         return jsonify({ "message": str(e) }), 400 
