@@ -118,7 +118,7 @@ const RegisterPage = () => {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
-        navigate("http://localhost:5173/auth/email-verification")
+        navigate("/auth/email-verification")
         console.log(response);
       })
       .catch((error) => {
@@ -132,7 +132,7 @@ const RegisterPage = () => {
         <Box
           boxShadow={2}
           p={3}
-          width={{ xs: "60%", sm: "80%", md: "100%", lg: "130%", xl: "150%" }} // Responsive width
+          width={"450px"} // Responsive width
           bgcolor="white"
           borderRadius={4}
           sx={{
@@ -141,6 +141,7 @@ const RegisterPage = () => {
             padding: "40px",
             display: "flex",
             flexDirection: "column",
+            textAlign: "center"
           }} // Taller box
         >
           <Typography variant="h4" gutterBottom fontWeight={"bold"}>

@@ -42,9 +42,8 @@ def get_user_wordlist(user_id):
 def post_user_words(user_id): 
     try:
         print("Adding word...")
-        data = request.json 
-
         session = Session() 
+        data = request.json 
 
         if (not data.get('word') or not data.get('word_type') or not data.get('category') or not data.get('definition')
             or not data.get('translated_language') or not data.get('translation')):

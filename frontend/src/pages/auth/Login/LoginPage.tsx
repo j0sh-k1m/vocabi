@@ -2,6 +2,8 @@ import { AccountBoxOutlined, LockPersonOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
+  CircularProgress,
+  Container,
   Grid,
   InputAdornment,
   TextField,
@@ -26,6 +28,7 @@ const LoginPage = () => {
   const [loginError, setLoginError] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
     const emailInput = event.target.value;
@@ -41,6 +44,8 @@ const LoginPage = () => {
     if (!(email && password)) {
       return;
     }
+
+    setIsLoading(true);
 
     const data = {
       email: email,
@@ -69,9 +74,12 @@ const LoginPage = () => {
         );
         dispatch(authActions.setToken({ token: response.data.token }));
         navigate(`/user-modules/${response.data.user.user_id}`);
+
+        setIsLoading(false);
       })
       .catch((error) => {
         setLoginError(error.response.data.message);
+        setIsLoading(false);
       });
   };
 
@@ -90,7 +98,12 @@ const LoginPage = () => {
           flexDirection: "column",
         }}
       >
-        <Typography variant="h4" gutterBottom fontWeight={"bold"} sx={{ textAlign: "center" }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          fontWeight={"bold"}
+          sx={{ textAlign: "center" }}
+        >
           Login
         </Typography>
         <TextField
@@ -122,15 +135,29 @@ const LoginPage = () => {
           }}
           onChange={handlePasswordChange}
         />
-        <Button
-          variant="contained"
-          fullWidth
-          color="primary"
-          sx={{ mt: 2, borderRadius: "10px" }}
-          onClick={handleLoginSubmission}
-        >
-          Login
-        </Button>
+
+        {isLoading ? (
+          <Container
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 4,
+            }}
+          >
+            <CircularProgress sx={{}} />
+          </Container>
+        ) : (
+          <Button
+            variant="contained"
+            fullWidth
+            color="primary"
+            sx={{ mt: 2, borderRadius: "10px" }}
+            onClick={handleLoginSubmission}
+          >
+            Login
+          </Button>
+        )}
         {loginError && (
           <Box>
             <Typography variant="body2" sx={{ mt: 2, color: "red" }}>

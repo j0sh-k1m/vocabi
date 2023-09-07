@@ -18,7 +18,7 @@ def serialize_user_words(words: List[UserWord]) -> List[Dict]:
             "incorrect": word.incorrect 
         })
     if len(user_words) == 1: 
-        return user_words[0]
+        return [user_words[0]]
     return user_words
 
 def serialize_user_stats(stats: UserStat) -> Dict:

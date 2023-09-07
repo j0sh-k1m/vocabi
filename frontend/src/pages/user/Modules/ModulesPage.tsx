@@ -1,28 +1,25 @@
-import { Container, Divider, Grid } from "@mui/material";
+import { Box, Container, Divider, Grid, Typography } from "@mui/material";
 import Navbar from "../../../components/Navbar/Navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { authState } from "../../../store/store";
+import { AuthState } from "../../../store/store";
 import WordModule from "../../../components/WordModule/WordModule";
-import { useTheme } from "@mui/material";
-import { getDesignTokens } from "../../../themes/themes";
+
 import LoadingPage from "../../Loading/LoadingPage";
 
 type WordModule = {
   category: string;
   id: string;
-  occurrences: string;
+  occurrences: number;
 };
 
 const ModulesPage = () => {
-  const theme = useTheme();
-  const { palette } = getDesignTokens(theme.palette.mode);
+  const user_id = useSelector((state: AuthState) => state.user_id);
+  const token = useSelector((state: AuthState) => state.token);
 
-  const user_id = useSelector((state: authState) => state.user_id);
-  const token = useSelector((state: authState) => state.token);
-
-  const [modules, setModules] = useState<Array<WordModule>>([]);
+  const [modules, setModules] = useState<Array<WordModule>>();
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     axios({
@@ -31,8 +28,12 @@ const ModulesPage = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
-        console.log(response.data?.message);
-        setModules(response.data?.message);
+        if (typeof response.data.message !== "string") {
+          setModules(response.data.message);
+          setError("");
+        } else if (typeof response.data.message === "string") {
+          setError(response.data.message);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -42,8 +43,21 @@ const ModulesPage = () => {
   return (
     <>
       <Navbar />
-      {modules.length === 0 && <LoadingPage />}
-      {modules.length !== 0 && (
+      {!error && !modules && <LoadingPage />}
+      {error && !modules && (
+        <Grid
+          container
+          justifyContent="center"
+          alignItems="center"
+          height="80vh"
+        >
+          <Box sx={{ textAlign: "center" }}>
+            <Typography variant="h5">No Words Have Been Added!</Typography>
+            <Typography variant="h5">Please add some words</Typography>
+          </Box>
+        </Grid>
+      )}
+      {modules && (
         <Container>
           <Grid container spacing={2}>
             {modules.map((element) => (

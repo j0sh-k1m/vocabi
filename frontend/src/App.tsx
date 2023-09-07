@@ -17,6 +17,7 @@ import NotFoundPage from "./pages/error/NotFoundPage";
 import { useSelector } from "react-redux";
 import { authState } from "./store/store";
 import { Navigate } from "react-router-dom";
+import CreateWordPage from "./pages/user/CreateWord/CreateWordPage";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -42,6 +43,11 @@ function App() {
             path="/word-list/:user_id"
             element={isAuth ? <WordListPage /> : <Navigate to={"/"} />}
           />
+          <Route
+            path="/word-list/:user_id/create-word"
+            element={isAuth ? <CreateWordPage /> : <Navigate to={"/"} />}
+          >
+          </Route>
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
           <Route

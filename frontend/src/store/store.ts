@@ -8,7 +8,7 @@ const initialState = {
   email: null,
 };
 
-export type authState = {
+export type AuthState = {
   first_name: string, 
   last_name: string, 
   user_id: string, 

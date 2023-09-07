@@ -79,8 +79,8 @@ class UserWord(Base):
     translated_language = Column(String, nullable=False)
     translation = Column(String, nullable=False)
     created_at = Column(String, nullable=False)
-    correct = Column(String, nullable=False)
-    incorrect = Column(String, nullable=False)
+    correct = Column(Integer, nullable=False)
+    incorrect = Column(Integer, nullable=False)
 
     def __init__(self, user_id: int, word: str, word_type: str, category: str, definition: str, translated_language: str, translation: str) -> None:
         self.user_id = user_id 

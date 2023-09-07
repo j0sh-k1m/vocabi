@@ -5,7 +5,7 @@ import { getDesignTokens } from "../../themes/themes";
 
 type ComponentProps = {
   moduleName: string;
-  wordOccurrences: number; // Change the type to number
+  wordOccurrences: number;
 };
 
 const WordModule = (props: ComponentProps) => {
@@ -48,7 +48,7 @@ const WordModule = (props: ComponentProps) => {
           variant="body1"
           sx={{ textAlign: "center", margin: 1, color: palette.text.secondary }}
         >
-          Words: {formatWordCount(props.wordOccurrences)} {/* Format word count */}
+          Words: {formatWordCount(props.wordOccurrences)}
         </Typography>
         <IconButton sx={{ alignSelf: "center", borderRadius: "50%" }}>
           <PlayArrow />

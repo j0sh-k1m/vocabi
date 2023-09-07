@@ -9,17 +9,15 @@ import {
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { ColorModeContext } from "../../App";
-import { getDesignTokens } from "../../themes/themes";
 import { useSelector } from "react-redux";
-import { authState } from "../../store/store";
+import { AuthState } from "../../store/store";
 import { useTheme } from "@mui/material";
 
 const Navbar = () => {
   const colorMode = useContext(ColorModeContext);
   const theme = useTheme();
-  const { palette } = getDesignTokens(theme.palette.mode);
 
-  const user_id = useSelector((state: authState) => state.user_id);
+  const user_id = useSelector((state: AuthState) => state.user_id);
 
   return (
     <AppBar position="static" color="primary" sx={{ mb: 4 }}>
