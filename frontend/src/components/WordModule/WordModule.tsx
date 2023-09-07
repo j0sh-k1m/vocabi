@@ -46,7 +46,7 @@ const WordModule = (props: ComponentProps) => {
         </Typography>
         <Typography
           variant="body1"
-          sx={{ textAlign: "center", margin: 1, color: palette.text.secondary }}
+          sx={{ textAlign: "center", margin: 1, color: theme.palette.mode === 'light' ? palette.text.secondary : "#D3D3D3" }}
         >
           Words: {formatWordCount(props.wordOccurrences)}
         </Typography>

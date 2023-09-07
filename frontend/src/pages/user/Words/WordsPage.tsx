@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Typography } from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 import Navbar from "../../../components/Navbar/Navbar";
 import WordList, {
   WordItem,
@@ -8,15 +8,19 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { AuthState } from "../../../store/store";
 import LoadingPage from "../../Loading/LoadingPage";
-import { useNavigate } from "react-router-dom";
 
 const WordListPage = () => {
   const user_id = useSelector((state: AuthState) => state.user_id);
   const token = useSelector((state: AuthState) => state.token);
 
-  const navigate = useNavigate(); 
   const [words, setWords] = useState<Array<WordItem>>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleDeleteWord = (word_ids: number[]) => {
+    console.log(word_ids)
+    const updatedWords = words.filter((word) => !word_ids.includes(word.word_id))
+    setWords(updatedWords)
+  };
 
   useEffect(() => {
     axios({
@@ -36,10 +40,6 @@ const WordListPage = () => {
       });
   }, [token, user_id]);
 
-  const handleCreateNewWord = () => {
-    navigate(`/word-list/${user_id}/create-word`)
-  }
-
   return (
     <>
       <Navbar />
@@ -48,43 +48,9 @@ const WordListPage = () => {
       ) : (
         <Container>
           <Grid container spacing={2}>
-            <Grid item xs={12} sx={{ display: "flex" }}>
-              <Button
-                sx={{
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  mb: 2,
-                }}
-                onClick={handleCreateNewWord}
-              >
-                Create New Word
-              </Button>
-              <Button
-                sx={{
-                  color: "#71C562",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  mb: 2,
-                  ml: "auto",
-                  mr: 1,
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                sx={{
-                  color: "red",
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  mb: 2,
-                  mr: 1,
-                }}
-              >
-                Delete
-              </Button>
-            </Grid>
+            <Grid item xs={12} sx={{ display: "flex" }}></Grid>
             {words.length > 0 ? (
-              <WordList userWords={words} />
+              <WordList userWords={words} handleDeleteWord={handleDeleteWord} />
             ) : (
               <Typography>No words available.</Typography>
             )}

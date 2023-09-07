@@ -10,14 +10,14 @@ const WordListItem = (props: ComponentProps) => {
 
   return (
     <>
-      <TableCell>{word.word}</TableCell>
-      <TableCell>{word.category}</TableCell>
-      <TableCell>{word.word_type}</TableCell>
-      <TableCell>{word.translation}</TableCell>
-      <TableCell>{word.translated_language}</TableCell>
-      <TableCell>{word.definition}</TableCell>
-      <TableCell>{word.correct}</TableCell>
-      <TableCell>{word.incorrect}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.word}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.category}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.word_type}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.translation}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.translated_language}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.definition}</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.correctness}%</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.total_attempts}</TableCell>
     </>
   );
 };

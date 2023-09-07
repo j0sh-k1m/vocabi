@@ -10,31 +10,42 @@ import {
   TablePagination,
   TableFooter,
   Checkbox,
+  Button,
+  Container,
 } from "@mui/material";
 import WordListItem from "../WordItem/WordListItem";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AuthState } from "../../../store/store";
+import axios from "axios";
 
 type ComponentProps = {
   userWords: Array<WordItem>;
+  handleDeleteWord: (word_ids: number[]) => void;
 };
 
 export type WordItem = {
   category: string;
-  correct: number;
   created_at: string;
   definition: string;
-  incorrect: number;
   translated_language: string;
   translation: string;
   user_id: number;
   word: string;
   word_type: string;
   word_id: number;
+  correctness: number;
+  total_attempts: number; 
 };
 
 const WordList = (props: ComponentProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selected, setSelected] = useState<number[]>([]);
+  const [selected, setSelected] = useState<number[]>([]); // stores words by word_id
+
+  const navigate = useNavigate();
+  const user_id = useSelector((state: AuthState) => state.user_id);
+  const token = useSelector((state: AuthState) => state.token);
 
   const startIndex = page * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
@@ -87,9 +98,64 @@ const WordList = (props: ComponentProps) => {
 
   const isSelected = (word_id: number) => selected.indexOf(word_id) !== -1;
 
+  const handleCreateNewWord = () => {
+    navigate(`/word-list/${user_id}/create-word`);
+  };
+
+  const handleDeleteWord = () => {
+    if (selected.length === 0) {
+      return;
+    }
+    axios({
+      method: "delete",
+      url: `http://127.0.0.1:8080/word-list/${user_id}`,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      // Change backend to accommodate arrays
+      data: { word_ids: selected },
+    })
+      .then((response) => {
+        console.log(response);
+        props.handleDeleteWord(response.data.words);
+        setSelected([]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <>
-      <TableContainer component={Paper}>
+      <Container sx={{ display: "flex" }}>
+        <Button
+          sx={{
+            fontWeight: "bold",
+            borderRadius: "8px",
+            mb: 2,
+          }}
+          onClick={handleCreateNewWord}
+        >
+          Create New Word
+        </Button>
+        {selected.length !== 0 && (
+          <Button
+            sx={{
+              color: "red",
+              fontWeight: "bold",
+              borderRadius: "8px",
+              mb: 2,
+              mr: 1,
+              ml: "auto",
+            }}
+            onClick={handleDeleteWord}
+          >
+            Delete
+          </Button>
+        )}
+      </Container>
+      <TableContainer component={Paper} sx={{ mb: "100px" }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -103,14 +169,30 @@ const WordList = (props: ComponentProps) => {
                   onChange={handleSelectAllClick}
                 />
               </TableCell>
-              <TableCell>Word</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Word Type</TableCell>
-              <TableCell>Translation</TableCell>
-              <TableCell>Translated Language</TableCell>
-              <TableCell>Definition</TableCell>
-              <TableCell>Correct</TableCell>
-              <TableCell>Incorrect</TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Word
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Category
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Word Type
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Translation
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Translated Language
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Definition
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Correctness
+              </TableCell>
+              <TableCell sx={{ textAlign: "center", fontWeight: "bold" }}>
+                Total Attempts
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -125,7 +207,6 @@ const WordList = (props: ComponentProps) => {
                   <TableCell>
                     <Checkbox checked={isItemSelected} />
                   </TableCell>
-                  {/* Use the WordListItem component here */}
                   <WordListItem word={element} />
                 </TableRow>
               );

@@ -22,7 +22,25 @@ def get_user_wordlist(user_id):
 
         serialized_user_words = serialize_user_words(user_words)
 
-        return jsonify({ "message": "Successful", "user_words": serialized_user_words }), 200
+        word_data_list = []
+        for word_dict in serialized_user_words: 
+            word_data = {}
+            for key, value in word_dict.items(): 
+                if key == 'correct':
+                    if word_dict['correct'] + word_dict['incorrect'] == 0:
+                        word_data['correctness'] = 0
+                        
+                        break
+                    else:
+                        word_data['correctness'] = ((word_dict['correct'] / (word_dict['correct'] + word_dict['incorrect'])) * 100)
+                        break
+                else:
+                    word_data[f'{key}'] = value
+                    word_data['total_attempts'] = word_dict['correct'] + word_dict['incorrect']
+            word_data_list.append(word_data)
+
+
+        return jsonify({ "message": "Successful", "user_words": word_data_list }), 200
 
     except UserDoesNotHaveAnyWordsException as e:
         session.rollback()
@@ -120,21 +138,22 @@ def patch_user_word(user_id):
 def delete_user_word(user_id):
     try:
         data = request.json 
+        print(data.get('word_ids'))
 
         session = Session() 
 
-        if data.get('word_id') is None:
+        if data.get('word_ids') is None:
             raise MissingInformationException
-
-        word = user_word_service.get_word_info(session, data.get('word_id'))
-        if word is None: 
-            raise WordDoesNotExistException
         
-        user_word_service.delete_word(session, data.get('word_id'))
+        for word_id in data.get('word_ids'):
+            word = user_word_service.get_word_info(session, word_id)
+            if word is None: 
+                raise WordDoesNotExistException
+            user_word_service.delete_word(session, word_id)
 
         session.commit() 
 
-        return jsonify({ "message": f"Successfully deleted word {word.word}" }), 200
+        return jsonify({ "message": f"Successfully deleted words {data.get('word_ids')}", "words": data.get('word_ids') }), 200
 
     except MissingInformationException as e:
         session.rollback()
