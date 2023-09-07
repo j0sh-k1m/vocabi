@@ -15,7 +15,7 @@ import ResetPasswordPage from "./pages/auth/ResetPassword/ResetPasswordPage";
 import EmailVerificationPage from "./pages/auth/EmailVerification/EmailVerificationPage";
 import NotFoundPage from "./pages/error/NotFoundPage";
 import { useSelector } from "react-redux";
-import { authState } from "./store/store";
+import { AuthState } from "./store/store";
 import { Navigate } from "react-router-dom";
 import CreateWordPage from "./pages/user/CreateWord/CreateWordPage";
 
@@ -23,7 +23,7 @@ export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
 // Application
 function App() {
-  const isAuth = useSelector((state: authState) => state.token);
+  const isAuth = useSelector((state: AuthState) => state.token);
   return (
     <>
 
