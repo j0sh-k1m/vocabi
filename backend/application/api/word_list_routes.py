@@ -28,8 +28,7 @@ def get_user_wordlist(user_id):
             for key, value in word_dict.items(): 
                 if key == 'correct':
                     if word_dict['correct'] + word_dict['incorrect'] == 0:
-                        word_data['correctness'] = 0
-                        
+                        word_data['correctness'] = 0 
                         break
                     else:
                         word_data['correctness'] = ((word_dict['correct'] / (word_dict['correct'] + word_dict['incorrect'])) * 100)

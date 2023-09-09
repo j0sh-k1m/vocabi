@@ -2,9 +2,11 @@ from flask import Blueprint, request, jsonify
 from application import Session 
 from flask_jwt_extended import jwt_required
 from application.api import user_word_service, user_stat_service
-from application.utils.custom_exceptions import MissingQueryParamException, MissingInformationException, InvalidInformationException
+from application.utils.custom_exceptions import MissingQueryParamException, MissingInformationException, InvalidInformationException, UserDoesNotHaveAnyWordsException
 from application.utils.serializers import serialize_user_words, serialize_user_stats
+from application.utils.utils import calculate_word_score
 from collections import defaultdict
+import json
 
 user_modules_bp = Blueprint('user_modules', __name__, url_prefix='/user-modules')
 
@@ -60,16 +62,29 @@ def get_user_module_info(user_id):
             raise MissingQueryParamException
         
         user_words = user_word_service.get_words_by_user_id(session, user_id)
+
+        if not user_words:
+            raise UserDoesNotHaveAnyWordsException
         
         content: dict = {content_query: []} 
         for word in user_words:
             if word.category in content: 
                 content[word.category].append(word)
+
+        words = serialize_user_words(content[content_query])
         
-        serialized_user_words = serialize_user_words(content[content_query])
+        scores = []
+        for word in words: 
+            scores.append(calculate_word_score(word))
 
-        return jsonify({ "message": "Successful", "content": serialized_user_words}), 200
+        # Sorts the words by combining the list of word_dicts and list of scores
+        sorted_words = sorted(words, key=lambda x: scores[words.index(x)], reverse=True) 
 
+        return jsonify({ "message": "successful", "content": sorted_words }), 200
+    
+    except UserDoesNotHaveAnyWordsException as e: 
+        session.rollback() 
+        return jsonify({ "message": str(e) })
     
     except MissingQueryParamException as e: 
         session.rollback() 
@@ -77,6 +92,7 @@ def get_user_module_info(user_id):
 
     except Exception as e: 
         session.rollback() 
+        print(e)
         return jsonify({ "message": f"Server or Database error {e}" }), 500 
     
     finally:

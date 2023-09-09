@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { AuthState } from "./store/store";
 import { Navigate } from "react-router-dom";
 import CreateWordPage from "./pages/user/CreateWord/CreateWordPage";
+import ExecuteModulePage from "./pages/user/ExecuteModule/ExecuteModulePage";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -26,7 +27,6 @@ function App() {
   const isAuth = useSelector((state: AuthState) => state.token);
   return (
     <>
-
       <Router>
         {/* <HomePage></HomePage> */}
         <Routes>
@@ -34,6 +34,10 @@ function App() {
           <Route
             path="/user-modules/:user_id"
             element={isAuth ? <ModulesPage /> : <Navigate to={"/"} />}
+          />
+          <Route
+            path="/user-modules/:user_id/modules"
+            element={isAuth ? <ExecuteModulePage /> : <Navigate to={"/"} />}
           />
           <Route
             path="/stat/:user_id"
@@ -46,8 +50,7 @@ function App() {
           <Route
             path="/word-list/:user_id/create-word"
             element={isAuth ? <CreateWordPage /> : <Navigate to={"/"} />}
-          >
-          </Route>
+          ></Route>
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
           <Route

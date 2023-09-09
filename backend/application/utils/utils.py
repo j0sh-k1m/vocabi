@@ -2,6 +2,9 @@ import re
 import bcrypt
 from flask_mail import Message, Mail
 from flask import current_app
+from application.models.models import UserWord
+from math import pow
+import random
 
 def send_verification_email(user_email: str, token: str, mail: Mail) -> None:
     recipient = user_email 
@@ -55,3 +58,28 @@ def is_valid_email(email: str) -> bool:
 def hash_password(password: str) -> bytes:
     # hash password 
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def calculate_word_score(word: UserWord) -> float:
+    """Caluclates a 'score' of a word based on attempts and accuracy
+    
+    Args: 
+        word: the word to calculate the score for 
+    """
+
+    total_attempts = float(word['correct']) + float(word['incorrect'])
+
+    if total_attempts == 0:
+        return float('-inf')
+
+    accuracy = float(word['correct']) / float(total_attempts)
+
+    if accuracy == 0.0: 
+        return float('-inf')
+    
+    root_of_attempts = pow(total_attempts, 1/6)
+
+    score = root_of_attempts / accuracy
+
+    score += random.random()
+
+    return score 

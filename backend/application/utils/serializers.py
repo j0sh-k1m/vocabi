@@ -15,11 +15,27 @@ def serialize_user_words(words: List[UserWord]) -> List[Dict]:
             "translation": word.translation, 
             "created_at": word.created_at, 
             "correct": word.correct, 
-            "incorrect": word.incorrect 
+            "incorrect": word.incorrect
         })
     if len(user_words) == 1: 
         return [user_words[0]]
     return user_words
+
+def serialize_word_with_score(word: UserWord, score: float) -> Dict:
+    return {
+        "word_id": word.word_id, 
+        "user_id": word.user_id, 
+        "word": word.word, 
+        "word_type": word.word_type, 
+        "category": word.category, 
+        "definition": word.definition, 
+        "translated_language": word.translated_language, 
+        "translation": word.translation, 
+        "created_at": word.created_at, 
+        "correct": word.correct, 
+        "incorrect": word.incorrect, 
+        "score": score
+    }
 
 def serialize_user_stats(stats: UserStat) -> Dict:
     serialized_data = {
