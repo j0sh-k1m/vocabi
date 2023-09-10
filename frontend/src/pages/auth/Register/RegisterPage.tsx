@@ -1,4 +1,4 @@
-import { useTheme } from "@mui/material";
+import { CircularProgress, Container, useTheme } from "@mui/material";
 import {
   AccountBoxOutlined,
   AlternateEmailOutlined,
@@ -12,26 +12,31 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getDesignTokens } from "../../../themes/themes";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { authActions } from "../../../store/store";
 
 const RegisterPage = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+  const dispatch = useDispatch(); 
 
-  const [signUpError, setSignUpError] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [signUpError, setSignUpError] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [confirmPasswordError, setConfirmPasswordError] = useState<string>("");
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const validateEmail = (email: string) => {
     if (email === "") return false;
@@ -48,16 +53,6 @@ const RegisterPage = () => {
 
   const validateConfirmPassword = (confirmPassword: string) => {
     return password === confirmPassword;
-  };
-
-  const handleFirstNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const firstNameInput = event.target.value;
-    setFirstName(firstNameInput);
-  };
-
-  const handleLastNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const lastNameInput = event.target.value;
-    setLastName(lastNameInput);
   };
 
   const handleEmailChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +88,8 @@ const RegisterPage = () => {
     }
   };
 
-  const handleSignUpSubmission = () => {
+  const handleSignUpSubmission = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (
       !(
         validateEmail(email) &&
@@ -105,6 +101,8 @@ const RegisterPage = () => {
     ) {
       return;
     }
+
+    setIsLoading(true);
 
     const data = {
       first_name: firstName,
@@ -118,150 +116,170 @@ const RegisterPage = () => {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {
-        navigate("/auth/email-verification")
+        navigate("/auth/email-verification");
         console.log(response);
+        setIsLoading(false);
+        dispatch(authActions.setEmail({ email: email}))
       })
       .catch((error) => {
         setSignUpError(error.response.data.message);
+        setIsLoading(false);
       });
   };
 
   return (
     <>
       <Grid container justifyContent="center" alignItems="center" height="90vh">
-        <Box
-          boxShadow={2}
-          p={3}
-          width={"450px"} // Responsive width
-          bgcolor="white"
-          borderRadius={4}
-          sx={{
-            minHeight: "40vh",
-            minWidth: "17vw",
-            padding: "40px",
-            display: "flex",
-            flexDirection: "column",
-            textAlign: "center"
-          }} // Taller box
-        >
-          <Typography variant="h4" gutterBottom fontWeight={"bold"}>
-            Sign Up
-          </Typography>
-          <TextField
-            label="First Name"
-            fullWidth
-            margin="normal"
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountBoxOutlined />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleFirstNameChange}
-            error={!firstName}
-          />
-          <TextField
-            label="Last Name"
-            fullWidth
-            margin="normal"
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AccountBoxOutlined />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleLastNameChange}
-            error={!lastName}
-          />
-          <TextField
-            label="Email"
-            fullWidth
-            margin="normal"
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <AlternateEmailOutlined />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleEmailChange}
-            error={!!emailError}
-            helperText={emailError}
-          />
-          <TextField
-            label="Password"
-            fullWidth
-            margin="normal"
-            type="password"
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockPersonOutlined />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handlePasswordChange}
-            error={!!passwordError}
-            helperText={passwordError}
-          />
-          <TextField
-            label="Confirm Password"
-            fullWidth
-            margin="normal"
-            type="password"
-            variant="standard"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockPersonOutlined />
-                </InputAdornment>
-              ),
-            }}
-            onChange={handleConfirmPassword}
-            error={!!confirmPasswordError}
-            helperText={confirmPasswordError}
-          />
-          <Box>
-            {signUpError && (
-              <Typography variant="body2" sx={{ color: "red" }}>
-                {signUpError}
-              </Typography>
-            )}
-          </Box>
-          <Box>
-            <Typography variant="body2" fontWeight={"bold"}>
-              Password requirements:
-            </Typography>
-            <Typography variant="body2">At least 8 characters</Typography>
-            <Typography variant="body2">1 uppercase letter</Typography>
-            <Typography variant="body2">1 lowercase letter</Typography>
-            <Typography variant="body2">1 digit</Typography>
-            <Typography variant="body2">1 special character</Typography>
-          </Box>
-          <Button
-            variant="contained"
-            fullWidth
-            color="primary"
-            sx={{ mt: 2, borderRadius: "10px" }}
-            onClick={handleSignUpSubmission}
+        <form onSubmit={handleSignUpSubmission}>
+          <Box
+            boxShadow={2}
+            p={3}
+            width={"450px"} // Responsive width
+            bgcolor="white"
+            borderRadius={4}
+            sx={{
+              minHeight: "40vh",
+              minWidth: "17vw",
+              padding: "40px",
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "center",
+            }} // Taller box
           >
-            Sign Up
-          </Button>
-          <Box sx={{ mt: "auto", alignSelf: "flex-end-center" }}>
-            <Typography variant="body2" sx={{ mt: 2 }}>
-              Already have an account?{" "}
-              <Link to={"/auth/login"} style={{ color: palette.niceBlue }}>
-                Login
-              </Link>
+            <Typography variant="h4" gutterBottom fontWeight={"bold"}>
+              Sign Up
             </Typography>
+            <TextField
+              label="First Name"
+              fullWidth
+              margin="normal"
+              variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountBoxOutlined />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) => setFirstName(e.target.value)}
+              error={!firstName}
+            />
+            <TextField
+              label="Last Name"
+              fullWidth
+              margin="normal"
+              variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountBoxOutlined />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={(e) => setLastName(e.target.value)}
+              error={!lastName}
+            />
+            <TextField
+              label="Email"
+              fullWidth
+              margin="normal"
+              variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AlternateEmailOutlined />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleEmailChange}
+              error={!!emailError}
+              helperText={emailError}
+            />
+            <TextField
+              label="Password"
+              fullWidth
+              margin="normal"
+              type="password"
+              variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockPersonOutlined />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handlePasswordChange}
+              error={!!passwordError}
+              helperText={passwordError}
+            />
+            <TextField
+              label="Confirm Password"
+              fullWidth
+              margin="normal"
+              type="password"
+              variant="standard"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockPersonOutlined />
+                  </InputAdornment>
+                ),
+              }}
+              onChange={handleConfirmPassword}
+              error={!!confirmPasswordError}
+              helperText={confirmPasswordError}
+            />
+            <Box>
+              {signUpError && (
+                <Typography variant="body2" sx={{ color: "red" }}>
+                  {signUpError}
+                </Typography>
+              )}
+            </Box>
+            <Box>
+              <Typography variant="body2" fontWeight={"bold"}>
+                Password requirements:
+              </Typography>
+              <Typography variant="body2">At least 8 characters</Typography>
+              <Typography variant="body2">1 uppercase letter</Typography>
+              <Typography variant="body2">1 lowercase letter</Typography>
+              <Typography variant="body2">1 digit</Typography>
+              <Typography variant="body2">1 special character</Typography>
+            </Box>
+
+            {isLoading ? (
+              <Container
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  mt: 4,
+                }}
+              >
+                <CircularProgress sx={{}} />
+              </Container>
+            ) : (
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                sx={{ mt: 2, borderRadius: "10px" }}
+                type="submit"
+              >
+                Register
+              </Button>
+            )}
+
+            <Box sx={{ mt: "auto", alignSelf: "flex-end-center" }}>
+              <Typography variant="body2" sx={{ mt: 2 }}>
+                Already have an account?{" "}
+                <Link to={"/auth/login"} style={{ color: palette.niceBlue }}>
+                  Login
+                </Link>
+              </Typography>
+            </Box>
           </Box>
-        </Box>
+        </form>
       </Grid>
     </>
   );

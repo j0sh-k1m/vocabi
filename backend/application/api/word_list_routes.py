@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from application import Session 
 from flask_jwt_extended import jwt_required
-from application.api import user_word_service
+from application.api import user_word_service, user_stat_service
 from application.utils.serializers import serialize_user_words
 from application.utils.custom_exceptions import UserDoesNotHaveAnyWordsException, MissingInformationException, WordDoesNotExistException
 
@@ -77,6 +77,10 @@ def post_user_words(user_id):
 
         user_word_service.create_word(session, user_id, word, word_type, definition, category, translated_language, translation)        
         print("Created word")
+
+        user_stats = user_stat_service.get_user_stat(session, user_id)
+
+        user_stat_service.update_user_stat(session, user_id, { "total_words_added": (user_stats.total_words_added + 1) })
 
         session.commit() 
 

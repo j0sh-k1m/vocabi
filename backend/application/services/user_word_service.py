@@ -68,4 +68,20 @@ class UserWordService:
             'translation': translation
         }
         self.user_word_dao.update_word_info(session, word_id, changes)
+
+    def update_word_stats(self, session, word_id: int, correct: int, incorrect: int) -> None:
+        """Updates a word's correct and incorrect
+        
+        Args:
+            session: session
+            word_id: word id
+            correct: number of times words was answered correctly
+            incorrect: number if times word was answered incorrectly
+        """
+        word = self.user_word_dao.get_word_by_id(session, word_id)
+        changes = {
+            'correct': correct + word.correct, 
+            'incorrect': incorrect + word.incorrect, 
+        }
+        self.user_word_dao.update_word_info(session, word_id, changes)
     

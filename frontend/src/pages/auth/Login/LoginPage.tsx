@@ -85,101 +85,104 @@ const LoginPage = () => {
 
   return (
     <Grid container justifyContent="center" alignItems="center" height="90vh">
-      <Box
-        boxShadow={2}
-        p={3}
-        width={{ width: "400px" }} // Responsive width
-        bgcolor="white"
-        borderRadius={4}
-        sx={{
-          minHeight: "40vh",
-          padding: "40px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Typography
-          variant="h4"
-          gutterBottom
-          fontWeight={"bold"}
-          sx={{ textAlign: "center" }}
+      <form onSubmit={handleLoginSubmission}>
+        <Box
+          boxShadow={2}
+          p={3}
+          width={{ width: "400px" }} // Responsive width
+          bgcolor="white"
+          borderRadius={4}
+          sx={{
+            minHeight: "40vh",
+            padding: "40px",
+            display: "flex",
+            flexDirection: "column",
+          }}
         >
-          Login
-        </Typography>
-        <TextField
-          label="Email"
-          fullWidth
-          margin="normal"
-          variant="standard"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <AccountBoxOutlined />
-              </InputAdornment>
-            ),
-          }}
-          onChange={handleEmailChange}
-        />
-        <TextField
-          label="Password"
-          fullWidth
-          margin="normal"
-          type="password"
-          variant="standard"
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <LockPersonOutlined />
-              </InputAdornment>
-            ),
-          }}
-          onChange={handlePasswordChange}
-        />
-
-        {isLoading ? (
-          <Container
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mt: 4,
-            }}
-          >
-            <CircularProgress sx={{}} />
-          </Container>
-        ) : (
-          <Button
-            variant="contained"
-            fullWidth
-            color="primary"
-            sx={{ mt: 2, borderRadius: "10px" }}
-            onClick={handleLoginSubmission}
+          <Typography
+            variant="h4"
+            gutterBottom
+            fontWeight={"bold"}
+            sx={{ textAlign: "center" }}
           >
             Login
-          </Button>
-        )}
-        {loginError && (
-          <Box>
-            <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
-              {loginError}
+          </Typography>
+          <TextField
+            label="Email"
+            fullWidth
+            margin="normal"
+            variant="standard"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AccountBoxOutlined />
+                </InputAdornment>
+              ),
+            }}
+            onChange={handleEmailChange}
+          />
+          <TextField
+            label="Password"
+            fullWidth
+            margin="normal"
+            type="password"
+            variant="standard"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockPersonOutlined />
+                </InputAdornment>
+              ),
+            }}
+            onChange={handlePasswordChange}
+          />
+
+          {isLoading ? (
+            <Container
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                mt: 4,
+              }}
+            >
+              <CircularProgress sx={{}} />
+            </Container>
+          ) : (
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              sx={{ mt: 2, borderRadius: "10px" }}
+              type="submit"
+              onClick={handleLoginSubmission}
+            >
+              Login
+            </Button>
+          )}
+          {loginError && (
+            <Box>
+              <Typography variant="body2" sx={{ mt: 2, color: "red" }}>
+                {loginError}
+              </Typography>
+            </Box>
+          )}
+          <Box sx={{ mt: "auto", alignSelf: "flex-end-center" }}>
+            <Typography variant="body2" sx={{ mt: 2 }}>
+              Don't have an account?{" "}
+              <Link to={"/auth/register"} style={{ color: palette.niceBlue }}>
+                Register
+              </Link>
+            </Typography>
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Forgot your password?{" "}
+              <Link to={"/password/reset"} style={{ color: palette.niceBlue }}>
+                Reset Password
+              </Link>
             </Typography>
           </Box>
-        )}
-        <Box sx={{ mt: "auto", alignSelf: "flex-end-center" }}>
-          <Typography variant="body2" sx={{ mt: 2 }}>
-            Don't have an account?{" "}
-            <Link to={"/auth/register"} style={{ color: palette.niceBlue }}>
-              Sign Up
-            </Link>
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            Forgot your password?{" "}
-            <Link to={"/password/reset"} style={{ color: palette.niceBlue }}>
-              Reset Password
-            </Link>
-          </Typography>
         </Box>
-      </Box>
+      </form>
     </Grid>
   );
 };

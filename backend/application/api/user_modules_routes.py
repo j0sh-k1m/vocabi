@@ -107,9 +107,11 @@ def post_user_stats(user_id):
 
         user_stats = user_stat_service.get_user_stat(session, user_id)
 
+        # Validate that information is recieved 
         if not data.get('total_words_practiced') or not data.get('correct') or not data.get('incorrect'):
             raise MissingInformationException
         
+        # Validate that information given is correct 
         if int(data.get('total_words_practiced')) != (int(data.get('correct')) + int(data.get('incorrect'))):
             raise InvalidInformationException("total_words_practiced does not equal to correct and incorrect added")
 
@@ -125,9 +127,9 @@ def post_user_stats(user_id):
 
         user_stat_service.update_user_stat(session, user_id, changes)
 
-        session.commit()
-
         user_stats = user_stat_service.get_user_stat(session, user_id)
+
+        session.commit()
 
         serialized_user_stats = serialize_user_stats(user_stats)
 
@@ -142,8 +144,43 @@ def post_user_stats(user_id):
         return jsonify({ "message": str(e) }), 400 
     
     except Exception as e: 
-        session.rollback() 
+        session.rollback()
         return jsonify({ "message": f"Server or Database error: {e}" }), 500 
     
     finally:
         session.close()
+
+@user_modules_bp.route('/<int:user_id>/words', methods=['PATCH'])
+@jwt_required()
+def patch_user_word_stat(user_id):
+    try:
+        data = request.json 
+        session = Session() 
+
+        if data.get('words') is None:
+            raise MissingInformationException('words')
+
+        for word in data.get('words'):
+            if word.get('word_id') is None:
+                raise MissingInformationException('word_id')
+            elif word.get('correct') is None:
+                raise MissingInformationException('correct')
+            elif word.get('incorrect') is None: 
+                raise MissingInformationException('incorrrect')
+
+            user_word_service.update_word_stats(session, word['word_id'], word['correct'], word['incorrect']) 
+        
+        session.commit() 
+
+        return jsonify({ "message": "Successfully updated words" }), 200
+
+    except MissingInformationException as e: 
+        session.rollback() 
+        return jsonify({ "message": str(e) }), 400 
+    
+    except Exception as e: 
+        session.rollback() 
+        return jsonify({ "message": f"Server or Database error: {e}" }), 500
+    
+    finally:
+        session.close() 

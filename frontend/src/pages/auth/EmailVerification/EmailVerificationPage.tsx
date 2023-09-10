@@ -11,12 +11,16 @@ import { CodeOutlined } from "@mui/icons-material";
 import { ChangeEvent, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { AuthState } from "../../../store/store";
 
 const EmailVerificationPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
 
-  const tempEmail = "test@example.com";
+  const verificationEmailAddress = useSelector(
+    (state: AuthState) => state.email
+  );
 
   const [code, setCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -71,7 +75,7 @@ const EmailVerificationPage = () => {
           <Typography variant="h6" sx={{ mt: 3 }}>
             Verification code was to{" "}
             <Typography variant="body1" sx={{ mt: 2, color: palette.niceBlue }}>
-              {tempEmail}
+              {verificationEmailAddress}
             </Typography>
           </Typography>
           <TextField
