@@ -115,4 +115,15 @@ class UserStat(Base):
         self.correct = 0 
         self.incorrect = 0 
 
-# TODO: Create Group and Category tables 
+class ResetPassword(Base): 
+    __tablename__ = 'reset_password'
+
+    reset_id = Column(Integer, primary_key=True)
+    email = Column(String, nullable=False)
+    token = Column(LargeBinary, nullable=False)
+    current_date = Column(String, nullable=False)
+
+    def __init__(self, token: bytes, email: str):
+        self.token = token 
+        self.email = email 
+        self.current_date = datetime.utcnow() 

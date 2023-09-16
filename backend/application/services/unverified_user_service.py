@@ -6,7 +6,6 @@ from application.utils.custom_exceptions import UserAlreadyExistsException, User
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 from typing import Optional
-from urllib.parse import quote
 
 class UnverifiedUserService:
     def __init__(self, unverified_user_dao: UnverifiedUserDAO, user_dao: UserDAO):

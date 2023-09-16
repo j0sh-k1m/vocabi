@@ -6,6 +6,7 @@ const initialState = {
   user_id: null,
   token: null,
   email: null,
+  resetPasswordEmail: null, 
 };
 
 export type AuthState = {
@@ -13,7 +14,8 @@ export type AuthState = {
   last_name: string, 
   user_id: string, 
   token: string, 
-  email: string
+  email: string, 
+  resetPasswordEmail: string, 
 }
 
 const authSlice = createSlice({
@@ -35,6 +37,9 @@ const authSlice = createSlice({
     setEmail: (state, action) => {
       state.email = action.payload.email;
     },
+    setResetPasswordEmail: (state, action) => {
+      state.resetPasswordEmail = action.payload.resetPasswordEmail
+    }
   },
 });
 

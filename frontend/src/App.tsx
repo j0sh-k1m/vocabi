@@ -19,6 +19,7 @@ import { AuthState } from "./store/store";
 import { Navigate } from "react-router-dom";
 import CreateWordPage from "./pages/user/CreateWord/CreateWordPage";
 import ExecuteModulePage from "./pages/user/ExecuteModule/ExecuteModulePage";
+import CreateNewPasswordPage from "./pages/auth/CreateNewPassword/CreateNewPasswordPage";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -28,39 +29,62 @@ function App() {
   return (
     <>
       <Router>
-        {/* <HomePage></HomePage> */}
         <Routes>
+          {/* Starting Page */}
           <Route path="/" element={<HomePage />} />
-          <Route
-            path="/user-modules/:user_id"
-            element={isAuth ? <ModulesPage /> : <Navigate to={"/"} />}
-          />
-          <Route
-            path="/user-modules/:user_id/modules"
-            element={isAuth ? <ExecuteModulePage /> : <Navigate to={"/"} />}
-          />
-          <Route
-            path="/stat/:user_id"
-            element={isAuth ? <StatsPage /> : <Navigate to={"/"} />}
-          />
-          <Route
-            path="/word-list/:user_id"
-            element={isAuth ? <WordListPage /> : <Navigate to={"/"} />}
-          />
-          <Route
-            path="/word-list/:user_id/create-word"
-            element={isAuth ? <CreateWordPage /> : <Navigate to={"/"} />}
-          ></Route>
+
+          {/* Login Page */}
           <Route path="/auth/login" element={<LoginPage />} />
+
+          {/* Register Page */}
           <Route path="/auth/register" element={<RegisterPage />} />
-          <Route
-            path="/auth/password/reset"
-            element={isAuth ? <ResetPasswordPage /> : <Navigate to={"/"} />}
-          />
+
+          {/* Email Verification Page */}
           <Route
             path="/auth/email-verification"
             element={<EmailVerificationPage />}
           />
+
+          {/* Reset Password Page */}
+          <Route path="/auth/password/reset" element={<ResetPasswordPage />} />
+
+          {/* Create New Password */}
+          <Route
+            path="/auth/password/create-new"
+            element={<CreateNewPasswordPage />}
+          />
+
+          {/* User Modules Page */}
+          <Route
+            path="/user-modules/:user_id"
+            element={isAuth ? <ModulesPage /> : <Navigate to={"/"} />}
+          />
+
+          {/* Execute Module Page */}
+          <Route
+            path="/user-modules/:user_id/modules"
+            element={isAuth ? <ExecuteModulePage /> : <Navigate to={"/"} />}
+          />
+
+          {/* User Stats Page */}
+          <Route
+            path="/stat/:user_id"
+            element={isAuth ? <StatsPage /> : <Navigate to={"/"} />}
+          />
+
+          {/* User Word List Page */}
+          <Route
+            path="/word-list/:user_id"
+            element={isAuth ? <WordListPage /> : <Navigate to={"/"} />}
+          />
+
+          {/* Create Word Page */}
+          <Route
+            path="/word-list/:user_id/create-word"
+            element={isAuth ? <CreateWordPage /> : <Navigate to={"/"} />}
+          ></Route>
+
+          {/* Url Not Found Page */}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Router>

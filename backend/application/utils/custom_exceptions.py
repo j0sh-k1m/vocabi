@@ -85,3 +85,8 @@ class EmailSendingFailedException(Exception):
     def __init__(self):
         self.message = "Failed to send email (backend)"
         super().__init__(self.message)
+
+class InvalidTokenException(Exception):
+    def __init__(self): 
+        self.message = "Invalid Token"
+        super().__init__(self.message)

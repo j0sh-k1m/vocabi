@@ -14,13 +14,26 @@ def send_verification_email(user_email: str, token: str, mail: Mail) -> None:
 
         Thank you for registering with Vocabi. To complete your registration and verify your email address, copy this code and paste it:
 
-        [Verification Code] ({token})
+        [Verification Code]: {token}
 
         If you did not register for a Vocabi account, please ignore this email.
 
         Best regards,
         The Vocabi Team
         """
+    mail.send(msg)
+
+def send_reset_password_email(user_email: str, token: str, mail: Mail) -> None: 
+    recipient = user_email 
+    msg = Message("Vocabi - Reset Your Password", sender=current_app.config["MAIL_USERNAME"], recipients=[recipient])
+
+    msg.body = f"""
+        Hello
+
+        You have made a request to reset your password. To complete this process verify your email address by copying and pasting this code: 
+
+        [Verification Code]: {token}
+    """
     mail.send(msg)
 
 def is_valid_password(password: str) -> bool: 
@@ -58,6 +71,23 @@ def is_valid_email(email: str) -> bool:
 def hash_password(password: str) -> bytes:
     # hash password 
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+def hash_string(string: str) -> bytes: 
+    """Hashes a string
+    
+    Args: 
+        string: string to be hashed 
+    """
+    return bcrypt.hashpw(string.encode('utf-8'), bcrypt.gensalt())
+
+def check_hashed_string(string: str, hashed_string: bytes) -> bool:
+    """Check a hashed string to a regular string
+    
+    Args:
+        string: original string 
+        hashed_string: hashed string
+    """
+    return bcrypt.checkpw(string.encode(), hashed_string)
 
 def calculate_word_score(word: UserWord) -> float:
     """Caluclates a 'score' of a word based on attempts and accuracy

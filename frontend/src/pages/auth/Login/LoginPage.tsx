@@ -176,7 +176,7 @@ const LoginPage = () => {
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
               Forgot your password?{" "}
-              <Link to={"/password/reset"} style={{ color: palette.niceBlue }}>
+              <Link to={"/auth/password/reset"} style={{ color: palette.niceBlue }}>
                 Reset Password
               </Link>
             </Typography>

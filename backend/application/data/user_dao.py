@@ -23,10 +23,9 @@ class UserDAO(abc.ABC):
     @abc.abstractmethod
     def update_user_last_name(self, session, last_name: str) -> None: 
         raise NotImplementedError
-
     
     @abc.abstractmethod
-    def update_user_password(self, session, user_id: int, password: str) -> None:
+    def update_user_password(self, session, email: str, password: bytes) -> None:
         raise NotImplementedError
     
     @abc.abstractmethod
@@ -84,7 +83,7 @@ class SQLAlchemyUserDAO(UserDAO):
         """
         session.query(User).filter_by(user_id=user_id).update({ 'last_name': last_name })
 
-    def update_user_password(self, session, user_id: int, password: str) -> None: 
+    def update_user_password(self, session, email: str, password: bytes) -> None: 
         """Update a user's password, Does not check for correct password 
 
         Args:
@@ -92,7 +91,7 @@ class SQLAlchemyUserDAO(UserDAO):
             user_id: id of user 
             password: hashed password of user 
         """
-        session.query(User).filter_by(user_id=user_id).update({ 'password': password })
+        session.query(User).filter_by(email=email).update({ 'password': password })
 
     def delete_user(self, session, user_id: int) -> None:
         """Delete user from database 

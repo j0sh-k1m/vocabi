@@ -83,3 +83,13 @@ class UserService:
         
         except InvalidLoginCredentialsException:
             raise InvalidLoginCredentialsException
+        
+    def update_password(self, session, email: str, password: bytes) -> None: 
+        """Updates a user's password
+        
+        Args: 
+            session: session 
+            user_id: id of the user 
+            password: new password 
+        """
+        self.user_dao.update_user_password(session=session, email=email, password=password)
