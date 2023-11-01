@@ -87,7 +87,6 @@ const CreateNewPasswordPage = () => {
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => {
-        console.log(response);
         setResetSuccess(true);
       })
       .catch((error) => {

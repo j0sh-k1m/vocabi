@@ -34,8 +34,6 @@ const CreateWordPage = () => {
   };
 
   const handleCreateWord = () => {
-    // You can send the form data to your API or perform other actions here
-
     if (
       !word ||
       !category ||
@@ -57,13 +55,15 @@ const CreateWordPage = () => {
       },
     })
       .then((response) => {
-        console.log(response);
+
       })
       .catch((error) => {
         console.log(error);
       });
 
-    navigate(`/word-list/${user_id}`);
+    setTimeout(() => {
+      navigate(`/word-list/${user_id}`);
+    }, 200);
   };
 
   const handleCancel = () => {

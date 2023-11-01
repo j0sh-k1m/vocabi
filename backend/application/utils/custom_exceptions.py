@@ -43,7 +43,7 @@ class InvalidLoginCredentialsException(Exception):
         super().__init__(self.message)
 
 class MissingInformationException(Exception):
-    def __init__(self, info: str):
+    def __init__(self, info: str = None):
         if info: 
             self.message = f"Missing information in request body: {info}"
         else:

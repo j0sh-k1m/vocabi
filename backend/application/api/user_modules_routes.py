@@ -6,7 +6,6 @@ from application.utils.custom_exceptions import MissingQueryParamException, Miss
 from application.utils.serializers import serialize_user_words, serialize_user_stats
 from application.utils.utils import calculate_word_score
 from collections import defaultdict
-import json
 
 user_modules_bp = Blueprint('user_modules', __name__, url_prefix='/user-modules')
 
@@ -17,6 +16,7 @@ def get_user_modules(user_id):
     try: 
         session = Session()  
 
+        # Get user words 
         user_words = user_word_service.get_words_by_user_id(session, user_id)
 
         session.commit() 
@@ -37,6 +37,7 @@ def get_user_modules(user_id):
         
         # add number of words in each category 
         data = [] 
+        data.append({"category": "All Words", "id": "abc" , "occurrences": len(user_words)})
         for i in range(len(categories)):
             if categories[i]['category'] in word_occurrence:
                 data.append({ "category": categories[i]['category'], "id": categories[i]['id'], "occurrences": word_occurrence[categories[i]['category']] })
@@ -50,29 +51,41 @@ def get_user_modules(user_id):
     finally: 
         session.close()
 
+
+"""Gets the words of a module"""
 @user_modules_bp.route('/<int:user_id>/module', methods=['GET'])
 @jwt_required()
 def get_user_module_info(user_id):
     try:
         session = Session() 
 
+        # Get the query parameter
         content_query = request.args.get('content')
-
         if content_query is None: 
             raise MissingQueryParamException
         
+        # get user words 
         user_words = user_word_service.get_words_by_user_id(session, user_id)
-
         if not user_words:
             raise UserDoesNotHaveAnyWordsException
         
         content: dict = {content_query: []} 
-        for word in user_words:
-            if word.category in content: 
-                content[word.category].append(word)
+        
+        if content_query != "All Words":
 
+            # get all the words whose category matches the query parameter 
+            for word in user_words:
+                if word.category in content: 
+                    content[word.category].append(word)
+
+        elif content_query == "All Words":
+            for word in user_words:
+                content["All Words"].append(word)
+
+        # serialize user words 
         words = serialize_user_words(content[content_query])
         
+        # Get the scores of each word
         scores = []
         for word in words: 
             scores.append(calculate_word_score(word))
@@ -98,6 +111,8 @@ def get_user_module_info(user_id):
     finally:
         session.close() 
 
+
+"""Gets the stats for a user"""
 @user_modules_bp.route('/<int:user_id>/stats', methods=['POST'])
 @jwt_required() 
 def post_user_stats(user_id): 
@@ -105,19 +120,24 @@ def post_user_stats(user_id):
         data = request.json 
         session = Session() 
 
+        # get user stats 
         user_stats = user_stat_service.get_user_stat(session, user_id)
 
         # Validate that information is recieved 
-        if not data.get('total_words_practiced') or not data.get('correct') or not data.get('incorrect'):
-            raise MissingInformationException
+        if (not data.get('total_words_practiced') 
+            or not data.get('correct') and data.get('correct') > 0 
+            or not data.get('incorrect') and data.get('incorrect') > 0):
+            raise MissingInformationException('data is incorrect or missing')
         
         # Validate that information given is correct 
         if int(data.get('total_words_practiced')) != (int(data.get('correct')) + int(data.get('incorrect'))):
             raise InvalidInformationException("total_words_practiced does not equal to correct and incorrect added")
 
+        # update user stats
         total_words_practiced = int(data.get('total_words_practiced')) + user_stats.total_words_practiced
         correct = int(data.get('correct')) + user_stats.correct 
         incorrect = int(data.get('incorrect')) + user_stats.incorrect
+
 
         changes = {
             "total_words_practiced": total_words_practiced, 
@@ -125,12 +145,15 @@ def post_user_stats(user_id):
             "incorrect": incorrect
         } 
 
+        # apply updates to user stats 
         user_stat_service.update_user_stat(session, user_id, changes)
 
+        # get the new user stats
         user_stats = user_stat_service.get_user_stat(session, user_id)
 
         session.commit()
 
+        # serialize user stats 
         serialized_user_stats = serialize_user_stats(user_stats)
 
         return jsonify({ "message": "Successfully updated user stats", "content": serialized_user_stats }), 200 
@@ -156,6 +179,8 @@ def patch_user_word_stat(user_id):
     try:
         data = request.json 
         session = Session() 
+
+        print(data.get('words'))
 
         if data.get('words') is None:
             raise MissingInformationException('words')

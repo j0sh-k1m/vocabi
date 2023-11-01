@@ -80,7 +80,6 @@ const StatsPage = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
-        console.log(response);
         if (response.data.user_stats) {
           setUserStats(response.data.user_stats);
         }
@@ -95,7 +94,6 @@ const StatsPage = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
-        console.log(response);
         if (response.data.content) {
           setModuleData(response.data.content);
         }
@@ -126,10 +124,10 @@ const StatsPage = () => {
               <CircularProgress
                 variant="determinate"
                 value={userStats.accuracy}
-                color={userStats.accuracy >= 70 ? "success" : "error"}
+                color={userStats.accuracy >= 70 ? "success" : userStats.accuracy >= 50 ? "secondary" : "error"}
                 sx={{ width: "100px", height: "100px", mr: 2 }}
               />
-              <Typography variant="h4">{userStats.accuracy}%</Typography>
+              <Typography variant="h4">{userStats.accuracy.toFixed(0)}%</Typography>
             </Box>
           </Paper>
         </Grid>
@@ -164,7 +162,7 @@ const StatsPage = () => {
             <Typography variant="h6">Best Word</Typography>
             <Typography variant="h4">{userStats.bestWord.word}</Typography>
             <Typography variant="body1">
-              Accuracy: {userStats.bestWord.accuracy}%
+              Accuracy: {userStats.bestWord.accuracy.toFixed(0)}%
             </Typography>
           </Paper>
         </Grid>
@@ -175,7 +173,7 @@ const StatsPage = () => {
             <Typography variant="h6">Worst Word</Typography>
             <Typography variant="h4">{userStats.worstWord.word}</Typography>
             <Typography variant="body1">
-              Accuracy: {userStats.worstWord.accuracy}%
+              Accuracy: {userStats.worstWord.accuracy.toFixed(0)}%
             </Typography>
           </Paper>
         </Grid>
@@ -213,10 +211,10 @@ const StatsPage = () => {
               <CircularProgress
                 variant="determinate"
                 value={module?.accuracy}
-                color={module?.accuracy >= 70 ? "success" : "error"}
+                color={module?.accuracy >= 70.0 ? "success" : module?.accuracy >= 50 ? 'warning' : "error"}
                 sx={{ width: "100px", height: "100px", mr: 2 }}
               />
-              <Typography variant="h4">{module?.accuracy}%</Typography>
+              <Typography variant="h4">{module?.accuracy.toFixed(0)}%</Typography>
             </Box>
           </Paper>
         </Grid>
@@ -226,7 +224,7 @@ const StatsPage = () => {
           <Paper elevation={3} sx={{ p: 3 }}>
             <Typography variant="h6">Total Words Added</Typography>
             <Typography variant="h4">
-              {module.correctAttempts + module.incorrectAttempts}
+              {module.wordsAdded}
             </Typography>
           </Paper>
         </Grid>
@@ -253,7 +251,7 @@ const StatsPage = () => {
             <Typography variant="h6">Best Word</Typography>
             <Typography variant="h4">{module.bestWord.word}</Typography>
             <Typography variant="body1">
-              Accuracy {module.bestWord.accuracy}&
+              Accuracy {module.bestWord.accuracy.toFixed(0)}%
             </Typography>
           </Paper>
         </Grid>
@@ -264,7 +262,7 @@ const StatsPage = () => {
             <Typography variant="h6">Worst Word</Typography>
             <Typography variant="h4">{module.worstWord.word}</Typography>
             <Typography variant="body1">
-              Accuracy {module.worstWord.accuracy}%
+              Accuracy {module.worstWord.accuracy.toFixed(0)}%
             </Typography>
           </Paper>
         </Grid>

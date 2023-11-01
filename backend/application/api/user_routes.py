@@ -7,7 +7,7 @@ from application.api import user_word_service
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
-# NOTE: this is for user information (Settings etc)
+# NOTE: this is for user settings etc. (implement later)
 
 # Get user information 
 @user_bp.route('/<int:user_id>', methods=['GET'])

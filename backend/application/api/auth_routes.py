@@ -16,15 +16,17 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def signup():
     try:
         data = request.json
-        
         session = Session()
 
+        # Check request data for proper information 
         if data.get('first_name') is None or data.get('last_name') is None or data.get('email') is None or data.get('password') is None: 
             raise MissingInformationException
 
+        # Validate the email (proper email address)
         if not is_valid_email(data['email']):
             raise InvalidEmailException(data['email'])
 
+        # Validate the password (has all requirements)
         if not is_valid_password(data['password']):
             raise InvalidPasswordException
 
@@ -35,11 +37,13 @@ def signup():
         unverified_user_service.create_user(
                     session, data['first_name'], data['last_name'], data['email'], hashed_password)  
 
+        # Get the unverified user 
         unverified_user = unverified_user_service.get_user_by_email(session, data['email'])
 
         # Commit changes to db 
         session.commit()
 
+        # Send the user a verification email 
         try: 
             send_verification_email(unverified_user.email, unverified_user.token, mail)
         
@@ -81,9 +85,9 @@ def signup():
 def verify_email():
     try: 
         session = Session()
-
         data = request.json 
 
+        # Check for the verification token from the request data
         token = data.get('token')
         if token is None: 
             raise MissingInformationException
@@ -91,17 +95,11 @@ def verify_email():
         # verify the user
         user = unverified_user_service.verify_user_token(session, token)
 
-        print("User token verified")
-
         # create user in user table 
         user_service.create_user(session, user.first_name, user.last_name, user.email, user.password)
 
-        print("Created user in user table")
-
         # delete user from unverified_user table 
         unverified_user_service.delete_user(session, user.user_id)
-
-        print("delete in unverified")
 
         # create stats table for user 
         user_stat_service.create_user_stat(session, user.user_id)
@@ -138,21 +136,19 @@ def verify_email():
     finally:
         session.close()
 
+"""Login the user into their account"""
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
         data = request.json 
-
         session = Session()
 
-        if data['email'] is None or data['password'] is None:
+        # Check for email and password in request data
+        if data.get('email') is None or data.get('password') is None:
             raise MissingInformationException
 
         # check user input validity 
         if not is_valid_email(data['email']):
-            raise InvalidLoginCredentialsException
-
-        if not is_valid_password(data['password']):
             raise InvalidLoginCredentialsException
 
         # attempt to login the user 
@@ -163,6 +159,7 @@ def login():
 
         session.commit() 
 
+        # Serialize the user 
         serailized_user = serialize_user(user)
 
         return jsonify({ "token": access_token, "user": serailized_user }), 200
@@ -182,6 +179,7 @@ def login():
     finally:
         session.close()
 
+"""Starts the reset password flow by posting the user's email"""
 @auth_bp.route('/password/reset', methods=['POST'])
 def reset_password():
     try:
@@ -226,12 +224,14 @@ def reset_password():
     finally:
         session.close() 
     
+"""Allows user to create new password"""
 @auth_bp.route('/password/create-new', methods=['POST'])
 def create_new_password():
     try: 
         data = request.json
         session = Session() 
 
+        # Check for user email 
         user_email = data.get('email')
         if user_email is None: 
             raise MissingInformationException('Email')

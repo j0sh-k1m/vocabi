@@ -91,6 +91,8 @@ def check_hashed_string(string: str, hashed_string: bytes) -> bool:
 
 def calculate_word_score(word: UserWord) -> float:
     """Caluclates a 'score' of a word based on attempts and accuracy
+
+    Formula: [(total_attempts) ^ (1/6)] / accuracy + (0 <= num < 1)
     
     Args: 
         word: the word to calculate the score for 

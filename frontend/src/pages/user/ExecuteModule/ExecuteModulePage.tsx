@@ -53,8 +53,6 @@ const ExecuteModulePage = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
-        console.log(response);
-
         if (response.data.content) {
           setModuleWords(response?.data.content);
           setCurrentWord(response?.data.content[0]);
@@ -77,6 +75,7 @@ const ExecuteModulePage = () => {
    * Finish the module for a user
    */
   const handleFinishModule = () => {
+    console.log(wordsData)
     axios({
       method: "patch",
       url: `http://127.0.0.1:8080/user-modules/${user_id}/words`,
@@ -87,6 +86,11 @@ const ExecuteModulePage = () => {
       },
     })
       .then(() => {
+        console.log({
+          total_words_practiced: correctAttempts + incorrectAttempts,
+          correct: correctAttempts,
+          incorrect: incorrectAttempts,
+        })
         axios({
           method: "post",
           url: `http://127.0.0.1:8080/user-modules/${user_id}/stats`,

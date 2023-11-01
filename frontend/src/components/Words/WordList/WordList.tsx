@@ -117,7 +117,6 @@ const WordList = (props: ComponentProps) => {
       data: { word_ids: selected },
     })
       .then((response) => {
-        console.log(response);
         props.handleDeleteWord(response.data.words);
         setSelected([]);
       })
