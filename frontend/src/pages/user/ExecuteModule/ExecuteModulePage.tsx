@@ -1,5 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Typography, Paper, Grid, TextField, Box, Button } from "@mui/material";
+import {
+  Typography,
+  Paper,
+  Grid,
+  TextField,
+  Box,
+  Button,
+  Container,
+} from "@mui/material";
 import Navbar from "../../../components/Navbar/Navbar";
 import { WordItem } from "../../../components/Words/WordList/WordList";
 import axios from "axios";
@@ -11,6 +19,13 @@ type WordData = {
   word_id: number;
   correct: number;
   incorrect: number;
+};
+
+type GuessedWord = {
+  word: string;
+  translation: string;
+  user_guess: string;
+  correct: boolean;
 };
 
 const ExecuteModulePage = () => {
@@ -38,6 +53,9 @@ const ExecuteModulePage = () => {
   const [finishedModule, setFinshedModule] = useState<boolean>(false);
 
   const [wordsData, setWordsData] = useState<WordData[]>([]);
+
+  // keep track of guessed words
+  const [guessed, setGuessed] = useState<GuessedWord[]>([]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -75,7 +93,7 @@ const ExecuteModulePage = () => {
    * Finish the module for a user
    */
   const handleFinishModule = () => {
-    console.log(wordsData)
+    console.log(wordsData);
     axios({
       method: "patch",
       url: `http://127.0.0.1:8080/user-modules/${user_id}/words`,
@@ -90,7 +108,7 @@ const ExecuteModulePage = () => {
           total_words_practiced: correctAttempts + incorrectAttempts,
           correct: correctAttempts,
           incorrect: incorrectAttempts,
-        })
+        });
         axios({
           method: "post",
           url: `http://127.0.0.1:8080/user-modules/${user_id}/stats`,
@@ -143,6 +161,17 @@ const ExecuteModulePage = () => {
 
     const userGuess = answer.toLowerCase().trim();
     const correctAnswer = currentWord.word.toLowerCase().trim();
+
+    const results = [
+      ...guessed,
+      {
+        word: currentWord.word,
+        translation: currentWord.translation,
+        user_guess: userGuess,
+        correct: userGuess === correctAnswer,
+      },
+    ];
+    setGuessed(results);
 
     // user inputs correct word translation
     if (userGuess === correctAnswer) {
@@ -274,11 +303,13 @@ const ExecuteModulePage = () => {
           justifyContent="center"
           alignItems="center"
           spacing={4}
-          height="60vh"
+          mt={3}
+          mb={3}
+          sx={{ overflowY: "auto" }}
         >
           <Paper
             elevation={5}
-            sx={{ padding: "30px", textAlign: "center", wordSpacing: 2 }}
+            sx={{ padding: "30px", textAlign: "center", wordSpacing: 2, mb: 2 }}
           >
             <Grid item>
               <Typography variant="h2">Module Completed!</Typography>
@@ -325,6 +356,40 @@ const ExecuteModulePage = () => {
                 </span>
               </Typography>
             </Grid>
+            <hr/>
+            <Grid item>
+              <Typography variant="h4" mb={3}>
+                Incorrect Answers
+              </Typography>
+
+              {/* Show all incorrect answers */}
+              {guessed.map(
+                (element) =>
+                  !element.correct && (
+                    <Container sx={{mb: 3}}>
+                      <Typography>
+                        Word/Phrase:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {element.translation}
+                        </span>
+                      </Typography>
+                      <Typography>
+                        Correct Answer:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {element.word}
+                        </span>
+                      </Typography>
+                      <Typography>
+                        Your Answer:{" "}
+                        <span style={{ fontWeight: "bold" }}>
+                          {element.user_guess}
+                        </span>
+                      </Typography>
+                    </Container>
+                  )
+              )}
+            </Grid>
+            <hr/>
             <Grid item>
               <Button
                 onClick={() => navigate(`/user-modules/${user_id}`)}

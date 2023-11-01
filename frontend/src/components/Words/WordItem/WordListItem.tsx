@@ -16,7 +16,7 @@ const WordListItem = (props: ComponentProps) => {
       <TableCell sx={{ textAlign: "center" }}>{word.translation}</TableCell>
       <TableCell sx={{ textAlign: "center" }}>{word.translated_language}</TableCell>
       <TableCell sx={{ textAlign: "center" }}>{word.definition}</TableCell>
-      <TableCell sx={{ textAlign: "center" }}>{word.correctness}%</TableCell>
+      <TableCell sx={{ textAlign: "center" }}>{word.correctness.toFixed(0)}%</TableCell>
       <TableCell sx={{ textAlign: "center" }}>{word.total_attempts}</TableCell>
     </>
   );

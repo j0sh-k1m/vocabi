@@ -124,7 +124,7 @@ const StatsPage = () => {
               <CircularProgress
                 variant="determinate"
                 value={userStats.accuracy}
-                color={userStats.accuracy >= 70 ? "success" : userStats.accuracy >= 50 ? "secondary" : "error"}
+                color={userStats.accuracy >= 70 ? "success" : userStats.accuracy >= 50 ? "warning" : "error"}
                 sx={{ width: "100px", height: "100px", mr: 2 }}
               />
               <Typography variant="h4">{userStats.accuracy.toFixed(0)}%</Typography>
@@ -197,7 +197,7 @@ const StatsPage = () => {
           />
         )}
       </Grid>
-      <Grid container spacing={3} sx={{ margin: "0 auto", maxWidth: "900px" }}>
+      <Grid container spacing={3} sx={{ margin: "0 auto", maxWidth: "900px", mb: 4 }}>
         {/* Accuracy Stat */}
         <Grid item xs={12} sm={6} md={4} sx={{ textAlign: "center" }}>
           <Paper elevation={3} sx={{ p: 3 }}>
