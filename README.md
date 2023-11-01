@@ -6,4 +6,4 @@ This application displays word modules where users can learn their vocab. A stat
 
 # Running/Building 
 
-Due to the nature of this application, it is difficult to download and run your own instance of Vocabi. Thus, I hope to get this application hosted so that it can be available. When that happens, an update will be provided here. 
+Due to the nature of this application, it is difficult to download and run your own instance of Vocabi. Thus, I hope to get this application hosted at some point so that it can be available. When that happens, an update will be provided here. 
