@@ -366,7 +366,7 @@ const ExecuteModulePage = () => {
               {guessed.map(
                 (element) =>
                   !element.correct && (
-                    <Container sx={{mb: 3}}>
+                    <Container key={element.word+element.correct+element.user_guess+element.translation} sx={{mb: 3}}>
                       <Typography>
                         Word/Phrase:{" "}
                         <span style={{ fontWeight: "bold" }}>
