@@ -23,6 +23,7 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+  const apiURL = import.meta.env.VITE_API_URL
   const dispatch = useDispatch(); 
 
   const [signUpError, setSignUpError] = useState<string>("");
@@ -112,7 +113,7 @@ const RegisterPage = () => {
     };
 
     axios
-      .post("http://127.0.0.1:8080/auth/register", data, {
+      .post(`${apiURL}/auth/register`, data, {
         headers: { "Content-Type": "application/json" },
       })
       .then((response) => {

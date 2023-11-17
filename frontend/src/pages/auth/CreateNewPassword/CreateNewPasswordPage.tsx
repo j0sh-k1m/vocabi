@@ -20,6 +20,7 @@ import { getDesignTokens } from "../../../themes/themes";
 const CreateNewPasswordPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+  const apiURL = import.meta.env.VITE_API_URL
 
   const navigate = useNavigate(); 
 
@@ -77,7 +78,7 @@ const CreateNewPasswordPage = () => {
 
     axios({
       method: "post",
-      url: "http://127.0.0.1:8080/auth/password/create-new",
+      url: `${apiURL}/auth/password/create-new`,
       data: {
         email: email,
         password: newPassword,
@@ -86,7 +87,7 @@ const CreateNewPasswordPage = () => {
       },
       headers: { "Content-Type": "application/json" },
     })
-      .then((response) => {
+      .then(() => {
         setResetSuccess(true);
       })
       .catch((error) => {

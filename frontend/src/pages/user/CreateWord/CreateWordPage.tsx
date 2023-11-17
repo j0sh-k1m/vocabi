@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 const CreateWordPage = () => {
   const user_id = useSelector((state: AuthState) => state.user_id);
   const token = useSelector((state: AuthState) => state.token);
+  const apiURL = import.meta.env.VITE_API_URL
   const navigate = useNavigate();
 
   const [wordData, setWordData] = useState({
@@ -47,16 +48,13 @@ const CreateWordPage = () => {
 
     axios({
       method: "post",
-      url: `http://127.0.0.1:8080/word-list/${user_id}`,
+      url: `${apiURL}/word-list/${user_id}`,
       data: wordData,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => {
-
-      })
       .catch((error) => {
         console.log(error);
       });

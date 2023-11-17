@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 const LoginPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+  const apiURL = import.meta.env.VITE_API_URL
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const LoginPage = () => {
 
     axios({
       method: "post",
-      url: "http://127.0.0.1:8080/auth/login",
+      url: `${apiURL}/auth/login`,
       headers: { "Content-Type": "application/json" },
       data: data,
     })

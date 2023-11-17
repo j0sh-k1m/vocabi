@@ -17,6 +17,7 @@ import { AuthState } from "../../../store/store";
 const EmailVerificationPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
+  const apiURL = import.meta.env.VITE_API_URL
 
   const verificationEmailAddress = useSelector(
     (state: AuthState) => state.email
@@ -42,7 +43,7 @@ const EmailVerificationPage = () => {
 
     axios({
       method: "post",
-      url: `http://127.0.0.1:8080/auth/email-verification`,
+      url: `${apiURL}/auth/email-verification`,
       headers: { "Content-Type": "application/json" },
       data: data,
     })

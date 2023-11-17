@@ -17,6 +17,7 @@ type WordModule = {
 const ModulesPage = () => {
   const user_id = useSelector((state: AuthState) => state.user_id);
   const token = useSelector((state: AuthState) => state.token);
+  const apiURL = import.meta.env.VITE_API_URL
 
   const [modules, setModules] = useState<Array<WordModule>>();
   const [error, setError] = useState<string>("");
@@ -24,7 +25,7 @@ const ModulesPage = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: `http://127.0.0.1:8080/user-modules/${user_id}`,
+      url: `${apiURL}/user-modules/${user_id}`,
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {

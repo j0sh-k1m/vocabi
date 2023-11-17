@@ -14,6 +14,8 @@ const WordListPage = () => {
   const user_id = useSelector((state: AuthState) => state.user_id);
   const token = useSelector((state: AuthState) => state.token);
 
+  const apiURL = import.meta.env.VITE_API_URL; 
+
   const navigate = useNavigate();
 
   const [words, setWords] = useState<Array<WordItem>>([]);
@@ -29,7 +31,7 @@ const WordListPage = () => {
   useEffect(() => {
     axios({
       method: "get",
-      url: `http://127.0.0.1:8080/word-list/${user_id}`,
+      url: `${apiURL}/word-list/${user_id}`,
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
@@ -41,7 +43,7 @@ const WordListPage = () => {
       .finally(() => {
         setLoading(false);
       });
-  }, [token, user_id]);
+  }, [apiURL, token, user_id]);
 
   const handleCreateNewWord = () => {
     navigate(`/word-list/${user_id}/create-word`);

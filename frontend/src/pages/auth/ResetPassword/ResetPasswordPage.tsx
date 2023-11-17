@@ -21,6 +21,8 @@ const ResetPasswordPage = () => {
   const theme = useTheme();
   const { palette } = getDesignTokens(theme.palette.mode);
 
+  const apiURL = import.meta.env.VITE_API_URL
+
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
@@ -39,7 +41,7 @@ const ResetPasswordPage = () => {
 
     axios({
       method: "post",
-      url: `http://127.0.0.1:8080/auth/password/reset`,
+      url: `${apiURL}/auth/password/reset`,
       data: { email: email },
       headers: { "Content-Type": "application/json" },
     })

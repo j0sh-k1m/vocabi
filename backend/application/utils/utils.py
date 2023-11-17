@@ -101,12 +101,12 @@ def calculate_word_score(word: UserWord) -> float:
     total_attempts = float(word['correct']) + float(word['incorrect'])
 
     if total_attempts == 0:
-        return float('-inf')
+        return float('inf')
 
     accuracy = float(word['correct']) / float(total_attempts)
 
-    if accuracy == 0.0: 
-        return float('-inf')
+    if accuracy == 0: 
+        return float('inf')
     
     root_of_attempts = pow(total_attempts, 1/6)
 

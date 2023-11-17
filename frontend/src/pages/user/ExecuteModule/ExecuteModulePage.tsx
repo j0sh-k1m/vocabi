@@ -33,6 +33,9 @@ const ExecuteModulePage = () => {
   const user_id = useSelector((state: AuthState) => state.user_id);
   const token = useSelector((state: AuthState) => state.token);
 
+  // API url prefix
+  const apiURL = import.meta.env.VITE_API_URL
+
   const navigate = useNavigate();
 
   // Module data/stats shown to user
@@ -67,7 +70,7 @@ const ExecuteModulePage = () => {
 
     axios({
       method: "get",
-      url: `http://127.0.0.1:8080/user-modules/${user_id}/module?content=${moduleName}`,
+      url: `${apiURL}/user-modules/${user_id}/module?content=${moduleName}`,
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((response) => {
@@ -79,7 +82,7 @@ const ExecuteModulePage = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [token, user_id]);
+  }, [apiURL, token, user_id]);
 
   useEffect(() => {
     setAccuracy(
@@ -94,9 +97,15 @@ const ExecuteModulePage = () => {
    */
   const handleFinishModule = () => {
     console.log(wordsData);
+
+    if (wordsData.length === 0) {
+      navigate(`/user-modules/${user_id}`)
+      return
+    }
+
     axios({
       method: "patch",
-      url: `http://127.0.0.1:8080/user-modules/${user_id}/words`,
+      url: `${apiURL}/user-modules/${user_id}/words`,
       data: { words: wordsData },
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +120,7 @@ const ExecuteModulePage = () => {
         });
         axios({
           method: "post",
-          url: `http://127.0.0.1:8080/user-modules/${user_id}/stats`,
+          url: `${apiURL}/user-modules/${user_id}/stats`,
           data: {
             total_words_practiced: correctAttempts + incorrectAttempts,
             correct: correctAttempts,
